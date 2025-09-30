@@ -1,4 +1,4 @@
-# Gin GORM Template (Clean Architecture)
+# Gin GORM API Starter Template (based on Controller-Service-Repository Pattern)
 
 ## Contents
 
@@ -18,7 +18,7 @@
 
 ## Description
 
-A Clean Architecture starter template for projects using Gin (Golang) and PostgreSQL, with GORM as the ORM.
+An API starter template for projects based on Controller-Service-Repository (CSR) Pattern utilizing Gin (Golang) and PostgreSQL, with GORM as the ORM.
 
 ## Architecture
 

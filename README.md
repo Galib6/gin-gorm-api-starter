@@ -1,4 +1,4 @@
-# Gin GORM API Starter Template (based on Controller-Service-Repository Pattern)
+# Gin GORM API Starter Template
 
 ## Contents
 

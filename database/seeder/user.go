@@ -38,7 +38,7 @@ func UserSeeder(db *gorm.DB) error {
 			return err
 		}
 
-		isData := db.Find(&user, "email = ?", data.Email).RowsAffected
+		isData := db.Unscoped().Find(&user, "email = ?", data.Email).RowsAffected
 		if isData == 0 {
 			if err := db.Create(&data).Error; err != nil {
 				return err

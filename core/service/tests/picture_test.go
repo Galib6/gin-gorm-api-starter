@@ -11,8 +11,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/zetsux/gin-gorm-clean-starter/core/helper/dto"
 	"github.com/zetsux/gin-gorm-clean-starter/core/service"
-	"github.com/zetsux/gin-gorm-clean-starter/testutil"
-	"github.com/zetsux/gin-gorm-clean-starter/testutil/factory"
+	"github.com/zetsux/gin-gorm-clean-starter/tests/support"
+	"github.com/zetsux/gin-gorm-clean-starter/tests/support/factory"
 )
 
 func buildFileHeader(t *testing.T, field, filename string, content []byte) *multipart.FileHeader {
@@ -39,7 +39,7 @@ func TestUserService_ChangeAndDeletePicture(t *testing.T) {
 	tmp := t.TempDir()
 	require.NoError(t, os.Chdir(tmp))
 
-	db := testutil.NewTestDB(t)
+	db := support.NewTestDB(t)
 	us := service.NewUserService(factory.NewUserRepository(t, db))
 	ctx := context.Background()
 

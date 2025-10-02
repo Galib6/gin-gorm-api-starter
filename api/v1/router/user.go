@@ -23,6 +23,8 @@ func UserRouter(router *gin.Engine, userC controller.UserController, jwtS servic
 		userRoutes.DELETE("/me", middleware.Authenticate(jwtS, constant.EnumRoleUser), userC.DeleteSelfUser)
 		userRoutes.POST("", userC.Register)
 		userRoutes.POST("/login", userC.Login)
+
+		// user file routes
 		userRoutes.PATCH("/picture", middleware.Authenticate(jwtS, constant.EnumRoleUser), userC.ChangePicture)
 		userRoutes.DELETE("/picture/:user_id", middleware.Authenticate(jwtS, constant.EnumRoleUser), userC.DeletePicture)
 	}

@@ -10,29 +10,12 @@ import (
 	"github.com/zetsux/gin-gorm-clean-starter/common/constant"
 	"github.com/zetsux/gin-gorm-clean-starter/core/entity"
 	"github.com/zetsux/gin-gorm-clean-starter/core/repository"
-	"github.com/zetsux/gin-gorm-clean-starter/testutil"
+	"github.com/zetsux/gin-gorm-clean-starter/tests/support"
+	"github.com/zetsux/gin-gorm-clean-starter/tests/support/factory"
 )
 
-func seedUsers(t *testing.T, ur repository.UserRepository, n int) []entity.User {
-	ctx := context.Background()
-	users := make([]entity.User, 0, n)
-	for i := 0; i < n; i++ {
-		u := entity.User{
-			ID:       uuid.New(),
-			Name:     "User" + uuid.NewString()[:8],
-			Email:    uuid.NewString() + "@mail.test",
-			Password: "password",
-			Role:     constant.EnumRoleUser,
-		}
-		created, err := ur.CreateNewUser(ctx, nil, u)
-		require.NoError(t, err)
-		users = append(users, created)
-	}
-	return users
-}
-
 func TestUserRepository_CreateAndGetByPK(t *testing.T) {
-	db := testutil.NewTestDB(t)
+	db := support.NewTestDB(t)
 	ur := repository.NewUserRepository(repository.NewTxRepository(db))
 	ctx := context.Background()
 
@@ -54,11 +37,11 @@ func TestUserRepository_CreateAndGetByPK(t *testing.T) {
 }
 
 func TestUserRepository_UpdateNameAndUpdateUser(t *testing.T) {
-	db := testutil.NewTestDB(t)
+	db := support.NewTestDB(t)
 	ur := repository.NewUserRepository(repository.NewTxRepository(db))
 	ctx := context.Background()
 
-	seed := seedUsers(t, ur, 1)[0]
+	seed := factory.SeedUsers(t, ur, 1)[0]
 
 	newName := "New Name"
 	updated, err := ur.UpdateNameUser(ctx, nil, newName, seed)
@@ -73,12 +56,12 @@ func TestUserRepository_UpdateNameAndUpdateUser(t *testing.T) {
 }
 
 func TestUserRepository_GetAllUsers_PaginationAndSearch(t *testing.T) {
-	db := testutil.NewTestDB(t)
+	db := support.NewTestDB(t)
 	ur := repository.NewUserRepository(repository.NewTxRepository(db))
 	ctx := context.Background()
 	_ = ctx
 
-	_ = seedUsers(t, ur, 15)
+	_ = factory.SeedUsers(t, ur, 15)
 
 	// no pagination
 	users, _, total, err := ur.GetAllUsers(context.Background(), nil, base.GetsRequest{})
@@ -96,11 +79,11 @@ func TestUserRepository_GetAllUsers_PaginationAndSearch(t *testing.T) {
 }
 
 func TestUserRepository_DeleteUserByID(t *testing.T) {
-	db := testutil.NewTestDB(t)
+	db := support.NewTestDB(t)
 	ur := repository.NewUserRepository(repository.NewTxRepository(db))
 	ctx := context.Background()
 
-	seed := seedUsers(t, ur, 1)[0]
+	seed := factory.SeedUsers(t, ur, 1)[0]
 
 	err := ur.DeleteUserByID(ctx, nil, seed.ID.String())
 	require.NoError(t, err)

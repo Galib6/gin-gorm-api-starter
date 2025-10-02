@@ -53,7 +53,7 @@ func (us *userService) VerifyLogin(ctx context.Context, email string, password s
 
 func (us *userService) CreateNewUser(ctx context.Context, ud dto.UserRegisterRequest) (dto.UserResponse, error) {
 	userCheck, err := us.userRepository.GetUserByPrimaryKey(ctx, nil, constant.DBAttrEmail, ud.Email)
-	if err != nil {
+	if err != nil && err != errs.ErrUserNotFound {
 		return dto.UserResponse{}, err
 	}
 
@@ -178,7 +178,7 @@ func (us *userService) UpdateUserByID(ctx context.Context,
 
 	if ud.Email != "" && ud.Email != user.Email {
 		us, err := us.userRepository.GetUserByPrimaryKey(ctx, nil, constant.DBAttrEmail, ud.Email)
-		if err != nil {
+		if err != nil && err != errs.ErrUserNotFound {
 			return dto.UserResponse{}, err
 		}
 

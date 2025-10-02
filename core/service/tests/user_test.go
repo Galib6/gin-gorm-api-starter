@@ -8,12 +8,12 @@ import (
 	"github.com/zetsux/gin-gorm-clean-starter/common/base"
 	"github.com/zetsux/gin-gorm-clean-starter/core/helper/dto"
 	"github.com/zetsux/gin-gorm-clean-starter/core/service"
-	"github.com/zetsux/gin-gorm-clean-starter/testutil"
-	"github.com/zetsux/gin-gorm-clean-starter/testutil/factory"
+	"github.com/zetsux/gin-gorm-clean-starter/tests/support"
+	"github.com/zetsux/gin-gorm-clean-starter/tests/support/factory"
 )
 
 func TestUserService_RegisterLoginFetchUpdateDelete(t *testing.T) {
-	db := testutil.NewTestDB(t)
+	db := support.NewTestDB(t)
 	us := service.NewUserService(factory.NewUserRepository(t, db))
 	ctx := context.Background()
 

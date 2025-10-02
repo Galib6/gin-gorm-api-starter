@@ -16,7 +16,7 @@ type TxRepository interface {
 	DB() *gorm.DB
 
 	// tx
-	BeginTx(ctx context.Context, db *gorm.DB) (*gorm.DB, error)
+	BeginTx(ctx context.Context) (*gorm.DB, error)
 	CommitOrRollbackTx(ctx context.Context, tx *gorm.DB, err error)
 }
 

@@ -2,17 +2,15 @@ package middleware
 
 import (
 	"net/http"
-	"slices"
 	"strings"
 
 	"github.com/zetsux/gin-gorm-clean-starter/common/base"
-	"github.com/zetsux/gin-gorm-clean-starter/common/constant"
 	"github.com/zetsux/gin-gorm-clean-starter/core/service"
 
 	"github.com/gin-gonic/gin"
 )
 
-func Authenticate(jwtService service.JWTService, roles ...string) gin.HandlerFunc {
+func Authenticate(jwtService service.JWTService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
@@ -45,12 +43,9 @@ func Authenticate(jwtService service.JWTService, roles ...string) gin.HandlerFun
 			response := base.CreateFailResponse("Failed to process request", "", http.StatusUnauthorized)
 			c.AbortWithStatusJSON(http.StatusUnauthorized, response)
 			return
-		} else if roleRes != constant.EnumRoleAdmin && !slices.Contains(roles, roleRes) {
-			response := base.CreateFailResponse("Action unauthorized", "", http.StatusUnauthorized)
-			c.AbortWithStatusJSON(http.StatusForbidden, response)
-			return
 		}
 		c.Set("ID", idRes)
+		c.Set("ROLE", roleRes)
 		c.Next()
 	}
 }

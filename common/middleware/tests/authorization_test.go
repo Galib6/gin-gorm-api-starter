@@ -11,25 +11,12 @@ import (
 	"github.com/zetsux/gin-gorm-clean-starter/core/service"
 )
 
-func TestAuthenticate_MissingToken(t *testing.T) {
+func TestAuthenticate_ForbiddenRole(t *testing.T) {
 	t.Parallel()
 	gin.SetMode(gin.TestMode)
 	r := gin.New()
 	jwtS := service.NewJWTService()
-	r.GET("/protected", middleware.Authenticate(jwtS), func(c *gin.Context) { c.Status(http.StatusOK) })
-
-	req := httptest.NewRequest(http.MethodGet, "/protected", nil)
-	w := httptest.NewRecorder()
-	r.ServeHTTP(w, req)
-	require.Equal(t, http.StatusUnauthorized, w.Code)
-}
-
-func TestAuthenticate_ValidTokenAndRole(t *testing.T) {
-	t.Parallel()
-	gin.SetMode(gin.TestMode)
-	r := gin.New()
-	jwtS := service.NewJWTService()
-	r.GET("/protected", middleware.Authenticate(jwtS), func(c *gin.Context) {
+	r.GET("/protected", middleware.Authenticate(jwtS), middleware.Authorize("admin"), func(c *gin.Context) {
 		c.String(http.StatusOK, "ok")
 	})
 
@@ -38,5 +25,5 @@ func TestAuthenticate_ValidTokenAndRole(t *testing.T) {
 	req.Header.Set("Authorization", "Bearer "+token)
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
-	require.Equal(t, http.StatusOK, w.Code)
+	require.Equal(t, http.StatusForbidden, w.Code)
 }

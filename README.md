@@ -87,6 +87,10 @@ An API starter template for projects based on Controller-Service-Repository (CSR
 │   │   └── etc
 │   └── migrator.go
 │
+├── /tests
+│   ├── /support
+│   └── /integration
+│
 └── main.go
 ```
 

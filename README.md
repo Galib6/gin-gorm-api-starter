@@ -117,9 +117,14 @@ An API starter template for projects based on Controller-Service-Repository (CSR
   - `/repository` : The directory for things related to the Repository layer which is the layer that is responsible to interact directly with the database.
   - `/service` : The directory for things related to the Service layer which is the layer that is responsible for the flow / business logic of the app.
 
-- `/database`: The directory for things related to the database for example migrations and seeders.
+- `/database` : The directory for things related to the database for example migrations and seeders.
 
   - `/seeder` : The directory for things related to database seeding for each entity.
+
+- `/tests` : The directory for things related to automated API testings (tests folder inside layers are for unit testing purposes)
+
+  - `/support` : The directory to store utility / helper functions for testing purposes
+  - `/integration`: The directory to store integration test functions
 
 ### Explanation (ID)
 
@@ -148,9 +153,14 @@ An API starter template for projects based on Controller-Service-Repository (CSR
   - `/repository` : Directory untuk menyimpan hal-hal terkait Repository yang merupakan lapisan yang berhubungan langsung dengan database.
   - `/service` : Directory untuk menyimpan hal-hal terkait Service yang merupakan lapisan yang bertanggung jawab menangani alur atau logika bisnis aplikasi.
 
-- `/database`: Directory untuk menyimpan hal-hal terkait migrasi dan juga seeding terhadap database.
+- `/database` : Directory untuk menyimpan hal-hal terkait migrasi dan juga seeding terhadap database.
 
   - `/seeder` : Directory untuk menyimpan hal-hal yang diperlukan untuk seeding terhadap database dengan dipisahkan sesuai entitas.
+
+- `/tests` : Directory untuk menyimpan hal-hal terkait automated testing untuk API (folder tests pada setiap layer tersedia untuk unit testing)
+
+  - `/support` : Direktori untuk menyimpan fungsi-fungsi pembantu dalam konteks testing
+  - `/integration`: Direktori untuk menyimpan fungsi-fungsi integration testing
 
 ## Pre-requisites
 
@@ -171,6 +181,7 @@ An API starter template for projects based on Controller-Service-Repository (CSR
 
 1. Use the command `make tidy` (or use `go mod tidy` instead, if `make` is unable to be used) to adjust the dependencies accordingly
 2. Use the command `make run` (or use `go run main.go` instead, if `make` is unable to be used) to run the application
+3. Use the command `make test` (or use `go test ./...` instead, if `make` is unable to be used) to run the automated testing
 
 ## API Documentation (Postman)
 

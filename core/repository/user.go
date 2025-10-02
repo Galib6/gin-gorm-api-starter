@@ -57,7 +57,10 @@ func (ur *userRepository) GetUserByPrimaryKey(ctx context.Context,
 	}
 
 	err := tx.WithContext(ctx).Debug().Where(key+" = $1", val).Take(&user).Error
-	if err != nil && !(errors.Is(err, gorm.ErrRecordNotFound)) {
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return entity.User{}, errs.ErrUserNotFound
+		}
 		return user, err
 	}
 	return user, nil

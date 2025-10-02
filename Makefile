@@ -9,3 +9,6 @@ build:
 
 run-build: build
 	./main
+
+test:
+	go test ./...

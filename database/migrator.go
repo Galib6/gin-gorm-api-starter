@@ -9,6 +9,11 @@ import (
 )
 
 func DBMigrate(db *gorm.DB) {
+	if err := db.Exec(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`).Error; err != nil {
+		fmt.Println("Failed to create uuid-ossp extension:", err)
+		panic(err)
+	}
+
 	err := db.AutoMigrate(
 		entity.User{},
 	)

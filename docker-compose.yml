@@ -1,0 +1,38 @@
+version: '3.9'
+
+services:
+  app:
+    build:
+      context: .
+      target: dev
+    container_name: go_app
+    volumes:
+      - .:/app
+      - air_tmp:/app/tmp
+    ports:
+      - '8080:8080'
+    environment:
+      - USE_DOCKER=true
+      - DOCKER_DB_USER=postgres
+      - DOCKER_DB_PASS=postgres
+      - DOCKER_DB_HOST=go_db
+      - DOCKER_DB_NAME=gin_starter
+      - DOCKER_DB_PORT=5432
+    depends_on:
+      - go_db
+
+  go_db:
+    image: postgres:16
+    container_name: go_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: gin_starter
+    ports:
+      - '55432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  air_tmp:
+  pgdata:

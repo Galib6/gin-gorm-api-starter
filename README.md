@@ -171,20 +171,19 @@ An API starter template for projects based on Controller-Service-Repository (CSR
 ### PostgreSQL Requirements
 
 1. Create the database in PostgreSQL with the name equal to the value of DB_NAME in `.env`
-2. Use the command `CREATE EXTENSION IF NOT EXISTS "uuid-ossp";` on the database terminal
 
 ### GitHooks Requirements
 
 > Note : GitHooks is not mandatory for this starter. Only do the steps below if you want to apply & use it.
 
-1. Install golangci-lint as the linters aggregator for pre-commit linting by executing `go install github.com/golangci/golangci-lint@latest`. Alternatively, you can follow the recommended method, which involves installing the binary from the [official source](https://golangci-lint.run/usage/install/#binaries)
+1. Install golangci-lint as the linters aggregator for pre-commit linting by executing `go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest`. Alternatively, you can follow the recommended method, which involves installing the binary from the [official source](https://golangci-lint.run/usage/install/#binaries)
 2. Install commitlint as the conventional commit message checker by executing `go install github.com/conventionalcommit/commitlint@latest`. Alternatively, you can follow the recommended method, which involves installing the binary from the [official source](https://github.com/conventionalcommit/commitlint/releases)
 3. Configure your git's hooks path to be linked to the `.githooks` directory on this repository by executing `git config core.hooksPath .githooks`
 
 ## How to Run?
 
 1. Use the command `make tidy` (or use `go mod tidy` instead, if `make` is unable to be used) to adjust the dependencies accordingly
-2. Use the command `make run` (or use `go run main.go` instead, if `make` is unable to be used) to run the application
+2. Use the command `make run` (or use `go run main.go` instead, if `make` is unable to be used) to run the application. You can also use Docker with air to auto-reload by running `make up` (or use `docker-compose up` instead if `make` is unable to be used)
 3. Use the command `make test` (or use `go test ./...` instead, if `make` is unable to be used) to run the automated testing
 
 ## API Documentation (Postman)

@@ -1,3 +1,7 @@
+# =========================
+# Go commands
+# =========================
+
 tidy:
 	go mod tidy
 
@@ -18,3 +22,22 @@ test-integration:
 
 test-unit:
 	go test ./core/... ./common/... ./api/... -v
+
+# =========================
+# Docker commands
+# =========================
+
+up:
+	docker-compose up -d
+	@echo "Containers started in detached mode. Use 'make logs' to follow logs."
+
+down:
+	docker-compose down
+
+logs:
+	docker-compose logs -f
+
+rebuild:
+	docker-compose down -v
+	docker-compose up --build -d
+	@echo "Containers rebuilt and started. Use 'make logs' to follow logs."

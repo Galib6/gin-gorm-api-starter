@@ -37,7 +37,8 @@ func NewTestDB(t *testing.T) *gorm.DB {
 	// ensure stop
 	t.Cleanup(func() { _ = pg.Stop() })
 
-	dsn := fmt.Sprintf("host=localhost user=test password=test dbname=testdb port=%d sslmode=disable TimeZone=Asia/Jakarta", port)
+	dsn := fmt.Sprintf("host=localhost user=test password=test dbname=testdb"+
+		" port=%d sslmode=disable TimeZone=Asia/Jakarta", port)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		t.Fatalf("failed to open postgres: %v", err)

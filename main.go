@@ -29,8 +29,7 @@ func main() {
 	)
 
 	// Setting Up Routes
-	router.FileRouter(server, injector)
-	router.UserRouter(server, injector)
+	router.InitRoutes(server, injector)
 
 	// Running in localhost:8080
 	port := os.Getenv("PORT")

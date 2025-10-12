@@ -13,7 +13,10 @@ require (
 	gorm.io/gorm v1.25.7-0.20240204074919-46816ad31dde
 )
 
-require github.com/google/uuid v1.6.0
+require (
+	github.com/google/uuid v1.6.0
+	github.com/samber/do v1.6.0
+)
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect

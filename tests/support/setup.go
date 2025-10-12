@@ -4,10 +4,11 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/zetsux/gin-gorm-clean-starter/api/v1/controller"
+	"github.com/samber/do"
 	"github.com/zetsux/gin-gorm-clean-starter/api/v1/router"
 	"github.com/zetsux/gin-gorm-clean-starter/core/repository"
 	"github.com/zetsux/gin-gorm-clean-starter/core/service"
+	"github.com/zetsux/gin-gorm-clean-starter/provider"
 	"gorm.io/gorm"
 )
 
@@ -24,27 +25,27 @@ func SetupTestApp(t *testing.T) *TestApp {
 	t.Helper()
 	gin.SetMode(gin.TestMode)
 
-	// DB
-	db := NewTestDB(t)
-
-	// Repos
-	txRepo := repository.NewTxRepository(db)
-	userRepo := repository.NewUserRepository(txRepo)
-
-	// Services
-	userService := service.NewUserService(userRepo)
-	jwtService := service.NewJWTService()
-
-	// Controllers
-	userController := controller.NewUserController(userService, jwtService)
+	// Setup Dependencies
+	injector := do.New()
+	do.ProvideNamed(injector, provider.DATABASE, func(i *do.Injector) (*gorm.DB, error) {
+		return NewTestDB(t), nil
+	})
+	provider.SetupDependencies(injector)
 
 	// Router
 	r := gin.New()
-	router.UserRouter(r, userController, jwtService)
+	router.UserRouter(r, injector)
+
+	// Invoke
+	testDB := do.MustInvokeNamed[*gorm.DB](injector, provider.DATABASE)
+	txRepo := do.MustInvoke[repository.TxRepository](injector)
+	userRepo := do.MustInvoke[repository.UserRepository](injector)
+	userService := do.MustInvoke[service.UserService](injector)
+	jwtService := do.MustInvoke[service.JWTService](injector)
 
 	return &TestApp{
 		Server:      r,
-		DB:          db,
+		DB:          testDB,
 		TxRepo:      txRepo,
 		UserRepo:    userRepo,
 		UserService: userService,

@@ -10,12 +10,14 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/samber/do"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"github.com/zetsux/gin-gorm-clean-starter/api/v1/controller"
 	"github.com/zetsux/gin-gorm-clean-starter/api/v1/router"
 	"github.com/zetsux/gin-gorm-clean-starter/common/base"
 	"github.com/zetsux/gin-gorm-clean-starter/core/helper/dto"
+	"github.com/zetsux/gin-gorm-clean-starter/core/service"
 )
 
 type userServiceMock struct{ mock.Mock }
@@ -71,11 +73,22 @@ func TestUserController_RegisterAndLogin(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	r := gin.New()
 
+	// Create the injector and register mocks
+	injector := do.New()
 	usm := new(userServiceMock)
 	jwtm := new(jwtServiceMock)
-
 	userC := controller.NewUserController(usm, jwtm)
-	router.UserRouter(r, userC, jwtm)
+
+	// Register into injector so router can resolve them
+	do.Provide(injector, func(i *do.Injector) (service.JWTService, error) {
+		return jwtm, nil
+	})
+	do.Provide(injector, func(i *do.Injector) (controller.UserController, error) {
+		return userC, nil
+	})
+
+	// Use router with injector
+	router.UserRouter(r, injector)
 
 	// Register
 	regReq := dto.UserRegisterRequest{Name: "A", Email: "a@mail.test", Password: "secret"}

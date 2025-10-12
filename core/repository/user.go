@@ -13,12 +13,12 @@ import (
 )
 
 type userRepository struct {
-	txr *txRepository
+	txr TxRepository
 }
 
 type UserRepository interface {
 	// tx
-	TxRepository() *txRepository
+	TxRepository() TxRepository
 
 	// functional
 	CreateNewUser(ctx context.Context, tx *gorm.DB, user entity.User) (entity.User, error)
@@ -29,11 +29,11 @@ type UserRepository interface {
 	DeleteUserByID(ctx context.Context, tx *gorm.DB, id string) error
 }
 
-func NewUserRepository(txr *txRepository) *userRepository {
+func NewUserRepository(txr TxRepository) *userRepository {
 	return &userRepository{txr: txr}
 }
 
-func (ur *userRepository) TxRepository() *txRepository {
+func (ur *userRepository) TxRepository() TxRepository {
 	return ur.txr
 }
 

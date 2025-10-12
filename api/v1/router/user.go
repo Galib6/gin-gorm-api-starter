@@ -1,6 +1,7 @@
 package router
 
 import (
+	"github.com/samber/do"
 	"github.com/zetsux/gin-gorm-clean-starter/api/v1/controller"
 	"github.com/zetsux/gin-gorm-clean-starter/common/middleware"
 	"github.com/zetsux/gin-gorm-clean-starter/core/service"
@@ -8,7 +9,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func UserRouter(router *gin.Engine, userC controller.UserController, jwtS service.JWTService) {
+func UserRouter(router *gin.Engine, injector *do.Injector) {
+	var (
+		userC = do.MustInvoke[controller.UserController](injector)
+		jwtS  = do.MustInvoke[service.JWTService](injector)
+	)
+
 	userRoutes := router.Group("/api/v1/users")
 	{
 		// admin routes

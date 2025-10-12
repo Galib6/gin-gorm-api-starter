@@ -4,30 +4,22 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/zetsux/gin-gorm-clean-starter/api/v1/controller"
+	"github.com/samber/do"
 	"github.com/zetsux/gin-gorm-clean-starter/api/v1/router"
 	"github.com/zetsux/gin-gorm-clean-starter/common/middleware"
 	"github.com/zetsux/gin-gorm-clean-starter/config"
-	"github.com/zetsux/gin-gorm-clean-starter/core/repository"
-	"github.com/zetsux/gin-gorm-clean-starter/core/service"
+	"github.com/zetsux/gin-gorm-clean-starter/provider"
+	"gorm.io/gorm"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	var (
-		db = config.DBSetup()
+	// Setting Up Dependencies
+	var injector = do.New()
+	provider.SetupDependencies(injector)
 
-		txR   = repository.NewTxRepository(db)
-		userR = repository.NewUserRepository(txR)
-
-		jwtS  = service.NewJWTService()
-		userS = service.NewUserService(userR)
-
-		fileC = controller.NewFileController()
-		userC = controller.NewUserController(userS, jwtS)
-	)
-
+	db := do.MustInvokeNamed[*gorm.DB](injector, provider.DATABASE)
 	defer config.DBClose(db)
 
 	// Setting Up Server
@@ -37,8 +29,8 @@ func main() {
 	)
 
 	// Setting Up Routes
-	router.FileRouter(server, fileC)
-	router.UserRouter(server, userC, jwtS)
+	router.FileRouter(server, injector)
+	router.UserRouter(server, injector)
 
 	// Running in localhost:8080
 	port := os.Getenv("PORT")

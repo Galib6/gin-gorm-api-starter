@@ -50,37 +50,6 @@ func setupTemporaryFileDir(t *testing.T) string {
 	return tmpD
 }
 
-func TestUserService_ChangeAndDeletePicture(t *testing.T) {
-	tmpDir := setupTemporaryFileDir(t)
-	us, repo, ctx := setupUserServiceMock()
-
-	expected := entity.User{ID: uuid.New(), Name: "P", Email: "p@mail.test"}
-	repo.On("GetUserByPrimaryKey", ctx, (*gorm.DB)(nil), "email", "p@mail.test").Return(entity.User{}, errors.ErrUserNotFound).Once()
-	repo.On("CreateNewUser", ctx, (*gorm.DB)(nil), mock.AnythingOfType("entity.User")).Return(expected, nil)
-
-	created, err := us.CreateNewUser(ctx, dto.UserRegisterRequest{Name: "P", Email: "p@mail.test", Password: "secret"})
-	createdID := uuid.MustParse(created.ID)
-	createdUser := entity.User{ID: createdID, Name: created.Name, Email: created.Email}
-	require.NoError(t, err)
-
-	fh := buildFileHeader(t, "picture", "pic.txt", []byte("hello"))
-	expectedUpdatedUser := entity.User{ID: createdID, Name: created.Name, Email: created.Email}
-	repo.On("GetUserByPrimaryKey", ctx, (*gorm.DB)(nil), "id", createdUser.ID.String()).Return(createdUser, nil).Once()
-	repo.On("UpdateUser", ctx, (*gorm.DB)(nil), mock.AnythingOfType("entity.User")).Return(expectedUpdatedUser, nil)
-
-	updated, err := us.ChangePicture(ctx, dto.UserChangePictureRequest{Picture: fh}, created.ID)
-	require.NoError(t, err)
-	require.NotEmpty(t, updated.Picture)
-	expectedFilePath := filepath.Join(tmpDir, "files", updated.Picture)
-	require.FileExists(t, expectedFilePath, "file should have been uploaded")
-
-	expectedUpdatedUser.Picture = &updated.Picture
-	repo.On("GetUserByPrimaryKey", ctx, (*gorm.DB)(nil), "id", expectedUpdatedUser.ID.String()).Return(expectedUpdatedUser, nil).Once()
-
-	err = us.DeletePicture(ctx, created.ID)
-	require.NoError(t, err)
-}
-
 func TestUserService_ChangePicture(t *testing.T) {
 	tmpDir := setupTemporaryFileDir(t)
 	us, repo, ctx := setupUserServiceMock()

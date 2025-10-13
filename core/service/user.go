@@ -269,10 +269,15 @@ func (us *userService) ChangePicture(ctx context.Context,
 		return dto.UserResponse{}, err
 	}
 
-	return dto.UserResponse{
+	userResp := dto.UserResponse{
 		ID:      userUpdate.ID.String(),
-		Picture: *userUpdate.Picture,
-	}, nil
+		Picture: picPath,
+	}
+	if userUpdate.Picture != nil {
+		userResp.Picture = *userUpdate.Picture
+	}
+
+	return userResp, nil
 }
 
 func (us *userService) DeletePicture(ctx context.Context, userID string) error {

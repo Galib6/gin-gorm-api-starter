@@ -5,23 +5,19 @@ import (
 	"io"
 	"mime/multipart"
 	"os"
-	"strings"
+	"path/filepath"
 
 	"github.com/zetsux/gin-gorm-clean-starter/common/constant"
 	errs "github.com/zetsux/gin-gorm-clean-starter/core/helper/errors"
 )
 
 func UploadFile(file *multipart.FileHeader, path string) error {
-	subPath := strings.Split(path, "/")
-	dirPath := fmt.Sprintf("%s/%s", constant.FileBasePath, subPath[0])
-
-	if _, err := os.Stat(dirPath); os.IsNotExist(err) {
-		if err := os.MkdirAll(dirPath, 0777); err != nil {
-			return err
-		}
+	dirPath := filepath.Join(constant.FileBasePath, filepath.Dir(path))
+	filePath := filepath.Join(constant.FileBasePath, path)
+	if err := os.MkdirAll(dirPath, 0755); err != nil {
+		return err
 	}
 
-	filePath := fmt.Sprintf("%s/%s", dirPath, subPath[1])
 	uploadedFile, err := file.Open()
 	if err != nil {
 		return err
@@ -33,10 +29,10 @@ func UploadFile(file *multipart.FileHeader, path string) error {
 		return err
 	}
 
-	err = os.WriteFile(filePath, fileData, 0666)
-	if err != nil {
+	if err := os.WriteFile(filePath, fileData, 0644); err != nil {
 		return err
 	}
+
 	return nil
 }
 

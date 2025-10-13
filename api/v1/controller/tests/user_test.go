@@ -17,8 +17,11 @@ import (
 	"github.com/zetsux/gin-gorm-clean-starter/api/v1/router"
 	"github.com/zetsux/gin-gorm-clean-starter/common/base"
 	"github.com/zetsux/gin-gorm-clean-starter/core/helper/dto"
+	"github.com/zetsux/gin-gorm-clean-starter/core/helper/errors"
 	"github.com/zetsux/gin-gorm-clean-starter/core/service"
 )
+
+// --- Mock Services ---
 
 type userServiceMock struct{ mock.Mock }
 
@@ -69,17 +72,17 @@ func (j *jwtServiceMock) GetAttrByToken(token string) (string, string, error) {
 	return "id", "user", nil
 }
 
-func TestUserController_RegisterAndLogin(t *testing.T) {
+// --- Test Helpers ---
+
+func setupUserControllerTest() (*gin.Engine, *userServiceMock, *jwtServiceMock) {
 	gin.SetMode(gin.TestMode)
 	r := gin.New()
 
-	// Create the injector and register mocks
+	// Setup dependencies
 	injector := do.New()
 	usm := new(userServiceMock)
 	jwtm := new(jwtServiceMock)
 	userC := controller.NewUserController(usm, jwtm)
-
-	// Register into injector so router can resolve them
 	do.Provide(injector, func(i *do.Injector) (service.JWTService, error) {
 		return jwtm, nil
 	})
@@ -87,27 +90,85 @@ func TestUserController_RegisterAndLogin(t *testing.T) {
 		return userC, nil
 	})
 
-	// Use router with injector
 	router.UserRouter(r, injector)
+	return r, usm, jwtm
+}
 
-	// Register
+// --- Tests ---
+
+func TestUserController_Register(t *testing.T) {
+	r, usm, _ := setupUserControllerTest()
+
 	regReq := dto.UserRegisterRequest{Name: "A", Email: "a@mail.test", Password: "secret"}
 	usm.On("CreateNewUser", mock.Anything, regReq).Return(dto.UserResponse{ID: "1", Email: regReq.Email, Name: regReq.Name}, nil)
+
 	b, _ := json.Marshal(regReq)
 	req := httptest.NewRequest(http.MethodPost, "/api/v1/users", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
+
 	r.ServeHTTP(w, req)
 	require.Equal(t, http.StatusCreated, w.Code)
+}
 
-	// Login
-	loginReq := dto.UserLoginRequest{Email: regReq.Email, Password: regReq.Password}
+func TestUserController_Login(t *testing.T) {
+	r, usm, _ := setupUserControllerTest()
+
+	loginReq := dto.UserLoginRequest{Email: "a@mail.test", Password: "secret"}
 	usm.On("VerifyLogin", mock.Anything, loginReq.Email, loginReq.Password).Return(true)
-	usm.On("GetUserByPrimaryKey", mock.Anything, "email", loginReq.Email).Return(dto.UserResponse{ID: "1", Email: loginReq.Email, Name: "A", Role: "user"}, nil)
-	b, _ = json.Marshal(loginReq)
-	req = httptest.NewRequest(http.MethodPost, "/api/v1/users/login", bytes.NewReader(b))
+	usm.On("GetUserByPrimaryKey", mock.Anything, "email", loginReq.Email).Return(
+		dto.UserResponse{ID: "1", Email: loginReq.Email, Name: "A", Role: "user"}, nil,
+	)
+
+	b, _ := json.Marshal(loginReq)
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/users/login", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
-	w = httptest.NewRecorder()
+	w := httptest.NewRecorder()
+
 	r.ServeHTTP(w, req)
 	require.Equal(t, http.StatusOK, w.Code)
+}
+
+func TestUserController_Login_Invalid(t *testing.T) {
+	r, usm, _ := setupUserControllerTest()
+
+	loginReq := dto.UserLoginRequest{Email: "a@mail.test", Password: "wrong"}
+	usm.On("VerifyLogin", mock.Anything, loginReq.Email, loginReq.Password).Return(false)
+	usm.On("GetUserByPrimaryKey", mock.Anything, "email", loginReq.Email).Return(
+		dto.UserResponse{}, errors.ErrUserNotFound,
+	)
+
+	b, _ := json.Marshal(loginReq)
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/users/login", bytes.NewReader(b))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+
+	r.ServeHTTP(w, req)
+	require.Equal(t, http.StatusUnauthorized, w.Code)
+}
+
+func TestUserController_GetMe(t *testing.T) {
+	r, usm, jwtm := setupUserControllerTest()
+
+	jwtm.On("ValidateToken", "token").Return(&jwt.Token{Valid: true}, nil)
+	usm.On("GetUserByPrimaryKey", mock.Anything, mock.Anything, mock.Anything).Return(
+		dto.UserResponse{ID: "1", Email: "a@mail.test", Name: "A", Role: "user"}, nil,
+	)
+
+	req := httptest.NewRequest(http.MethodGet, "/api/v1/users/me", nil)
+	req.Header.Set("Authorization", "Bearer token")
+	w := httptest.NewRecorder()
+
+	r.ServeHTTP(w, req)
+	require.Equal(t, http.StatusOK, w.Code)
+}
+
+func TestUserController_GetMe_Unauthenticated(t *testing.T) {
+	r, _, _ := setupUserControllerTest()
+
+	req := httptest.NewRequest(http.MethodGet, "/api/v1/users/me", nil)
+	w := httptest.NewRecorder()
+
+	r.ServeHTTP(w, req)
+	require.Equal(t, http.StatusUnauthorized, w.Code)
 }

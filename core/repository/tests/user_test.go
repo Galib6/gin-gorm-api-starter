@@ -14,10 +14,22 @@ import (
 	"github.com/zetsux/gin-gorm-clean-starter/tests/support/factory"
 )
 
-func TestUserRepository_CreateAndGetByPK(t *testing.T) {
+// --- Test Helpers ---
+
+func setupUserRepositoryTest(t *testing.T) (repository.UserRepository, context.Context) {
+	t.Helper()
+
 	db := support.NewTestDB(t)
 	ur := repository.NewUserRepository(repository.NewTxRepository(db))
 	ctx := context.Background()
+
+	return ur, ctx
+}
+
+// --- Tests ---
+
+func TestUserRepository_CreateAndGetByPK(t *testing.T) {
+	ur, ctx := setupUserRepositoryTest(t)
 
 	user := entity.User{
 		ID:       uuid.New(),
@@ -36,10 +48,8 @@ func TestUserRepository_CreateAndGetByPK(t *testing.T) {
 	require.Equal(t, created.ID, fetched.ID)
 }
 
-func TestUserRepository_UpdateNameAndUpdateUser(t *testing.T) {
-	db := support.NewTestDB(t)
-	ur := repository.NewUserRepository(repository.NewTxRepository(db))
-	ctx := context.Background()
+func TestUserRepository_UpdateName(t *testing.T) {
+	ur, ctx := setupUserRepositoryTest(t)
 
 	seed := factory.SeedUsers(t, ur, 1)[0]
 
@@ -47,19 +57,22 @@ func TestUserRepository_UpdateNameAndUpdateUser(t *testing.T) {
 	updated, err := ur.UpdateNameUser(ctx, nil, newName, seed)
 	require.NoError(t, err)
 	require.Equal(t, newName, updated.Name)
+}
+
+func TestUserRepository_UpdateUser(t *testing.T) {
+	ur, ctx := setupUserRepositoryTest(t)
+
+	seed := factory.SeedUsers(t, ur, 1)[0]
 
 	newEmail := "newmail@example.com"
-	edit := entity.User{ID: updated.ID, Email: newEmail}
+	edit := entity.User{ID: seed.ID, Email: newEmail}
 	edited, err := ur.UpdateUser(ctx, nil, edit)
 	require.NoError(t, err)
 	require.Equal(t, newEmail, edited.Email)
 }
 
 func TestUserRepository_GetAllUsers_PaginationAndSearch(t *testing.T) {
-	db := support.NewTestDB(t)
-	ur := repository.NewUserRepository(repository.NewTxRepository(db))
-	ctx := context.Background()
-	_ = ctx
+	ur, _ := setupUserRepositoryTest(t)
 
 	_ = factory.SeedUsers(t, ur, 15)
 
@@ -79,9 +92,7 @@ func TestUserRepository_GetAllUsers_PaginationAndSearch(t *testing.T) {
 }
 
 func TestUserRepository_DeleteUserByID(t *testing.T) {
-	db := support.NewTestDB(t)
-	ur := repository.NewUserRepository(repository.NewTxRepository(db))
-	ctx := context.Background()
+	ur, ctx := setupUserRepositoryTest(t)
 
 	seed := factory.SeedUsers(t, ur, 1)[0]
 

@@ -11,15 +11,6 @@ type txRepository struct {
 	db *gorm.DB
 }
 
-type TxRepository interface {
-	// db
-	DB() *gorm.DB
-
-	// tx
-	BeginTx(ctx context.Context) (*gorm.DB, error)
-	CommitOrRollbackTx(ctx context.Context, tx *gorm.DB, err error)
-}
-
 func NewTxRepository(db *gorm.DB) *txRepository {
 	return &txRepository{db: db}
 }

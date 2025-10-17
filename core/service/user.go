@@ -9,14 +9,16 @@ import (
 	"github.com/zetsux/gin-gorm-clean-starter/core/entity"
 	"github.com/zetsux/gin-gorm-clean-starter/core/helper/dto"
 	errs "github.com/zetsux/gin-gorm-clean-starter/core/helper/errors"
-	"github.com/zetsux/gin-gorm-clean-starter/core/repository"
+	query_interface "github.com/zetsux/gin-gorm-clean-starter/core/interface/query"
+	repository_interface "github.com/zetsux/gin-gorm-clean-starter/core/interface/repository"
 	"github.com/zetsux/gin-gorm-clean-starter/support/base"
 	"github.com/zetsux/gin-gorm-clean-starter/support/constant"
 	"github.com/zetsux/gin-gorm-clean-starter/support/util"
 )
 
 type userService struct {
-	userRepository repository.UserRepository
+	userRepository repository_interface.UserRepository
+	userQuery      query_interface.UserQuery
 }
 
 type UserService interface {
@@ -31,8 +33,8 @@ type UserService interface {
 	DeletePicture(ctx context.Context, userID string) error
 }
 
-func NewUserService(userR repository.UserRepository) UserService {
-	return &userService{userRepository: userR}
+func NewUserService(userR repository_interface.UserRepository, userQ query_interface.UserQuery) UserService {
+	return &userService{userRepository: userR, userQuery: userQ}
 }
 
 func (us *userService) VerifyLogin(ctx context.Context, email string, password string) bool {
@@ -96,7 +98,7 @@ func (us *userService) GetAllUsers(ctx context.Context, req base.GetsRequest) (
 		req.Sort = req.Sort[1:] + " DESC"
 	}
 
-	users, lastPage, total, err := us.userRepository.GetAllUsers(ctx, nil, req)
+	users, lastPage, total, err := us.userQuery.GetAllUsers(ctx, req)
 	if err != nil {
 		return []dto.UserResponse{}, base.PaginationResponse{}, err
 	}

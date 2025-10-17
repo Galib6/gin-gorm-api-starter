@@ -34,7 +34,7 @@ An API starter template for projects based on Controller-Service-Repository (CSR
 │           ├── user.go
 │           └── etc
 │
-├── /common
+├── /support
 │   ├── /base
 │   │   └── model.go
 │   │   └── request.go
@@ -88,7 +88,7 @@ An API starter template for projects based on Controller-Service-Repository (CSR
 │   └── migrator.go
 │
 ├── /tests
-│   ├── /support
+│   ├── /testutil
 │   └── /integration
 │
 └── main.go
@@ -101,7 +101,7 @@ An API starter template for projects based on Controller-Service-Repository (CSR
   - `/controller` : The directory for things related to the Controller layer which is the part of program that handle requests and return responses.
   - `/router` : The directory for things related with routing. Therefore filled with every available supported routes / endpoints along with the request method and used middleware.
 
-- `/common` : The directory for common things that are frequently used all over the architectures.
+- `/support` : The directory for common supporting things that are frequently used all over the architectures.
 
   - `/base` : The directory for base things such as variables, constants, and functions to be used in other directories. It consists of things like response, request, and model base structure.
   - `/middleware` : The directory for Middlewares which are mechanism that intercept a HTTP request and response process before handled directly by the controller of an endpoint.
@@ -127,7 +127,7 @@ An API starter template for projects based on Controller-Service-Repository (CSR
 
 - `/tests` : The directory for things related to automated API testings (tests folder inside layers are for unit testing purposes)
 
-  - `/support` : The directory to store utility / helper functions for testing purposes
+  - `/testutil` : The directory to store utility / helper functions for testing purposes
   - `/integration`: The directory to store integration test functions
 
 ### Explanation (ID)
@@ -137,7 +137,7 @@ An API starter template for projects based on Controller-Service-Repository (CSR
   - `/controller` : Directory untuk menyimpan hal-hal terkait dengan Controller yang merupakan bagian dari program yang berfungsi menerima request dan memberikan response.
   - `/router` : Directory untuk menyimpan hal-hal yang terkait dengan routing. Berisikan routes atau endpoints yang didukung beserta dengan metode requestnya.
 
-- `/common` : Directory yang berisi berbagai hal umum untuk digunakan di seluruh directory.
+- `/support` : Directory yang berisi berbagai hal umum pembantu untuk digunakan di seluruh directory.
 
   - `/base` : Directory yang berisi berbagai variabel, konstanta, maupun fungsi standar untuk digunakan di berbagai directory lainnya seperti response, request, error, struktur dasar model, konstanta, dan lain-lain.
   - `/middleware` : Directory untuk menyimpan Middleware yang merupakan mekanisme yang menengahi proses HTTP request dan response sebelum ditangani secara langsung oleh controller setiap route.
@@ -163,7 +163,7 @@ An API starter template for projects based on Controller-Service-Repository (CSR
 
 - `/tests` : Directory untuk menyimpan hal-hal terkait automated testing untuk API (folder tests pada setiap layer tersedia untuk unit testing)
 
-  - `/support` : Direktori untuk menyimpan fungsi-fungsi pembantu dalam konteks testing
+  - `/testutil` : Direktori untuk menyimpan fungsi-fungsi pembantu dalam konteks testing
   - `/integration`: Direktori untuk menyimpan fungsi-fungsi integration testing
 
 ## Pre-requisites

@@ -1,4 +1,4 @@
-package support
+package testutil
 
 import (
 	"fmt"

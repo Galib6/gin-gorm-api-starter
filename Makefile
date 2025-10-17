@@ -21,7 +21,7 @@ test-integration:
 	go test ./tests/integration -v
 
 test-unit:
-	go test ./core/... ./common/... ./api/... -v
+	go test ./core/... ./support/... ./api/... -v
 
 # =========================
 # Docker commands

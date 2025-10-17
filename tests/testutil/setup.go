@@ -1,4 +1,4 @@
-package support
+package testutil
 
 import (
 	"testing"
@@ -9,6 +9,7 @@ import (
 	"github.com/zetsux/gin-gorm-clean-starter/core/repository"
 	"github.com/zetsux/gin-gorm-clean-starter/core/service"
 	"github.com/zetsux/gin-gorm-clean-starter/provider"
+	"github.com/zetsux/gin-gorm-clean-starter/support/middleware"
 	"gorm.io/gorm"
 )
 
@@ -34,6 +35,10 @@ func SetupTestApp(t *testing.T) *TestApp {
 
 	// Router
 	r := gin.New()
+	r.Use(
+		middleware.CORSMiddleware(),
+		middleware.ErrorHandler(),
+	)
 	router.UserRouter(r, injector)
 
 	// Invoke

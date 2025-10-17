@@ -9,9 +9,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/require"
-	"github.com/zetsux/gin-gorm-clean-starter/common/base"
 	"github.com/zetsux/gin-gorm-clean-starter/core/helper/dto"
-	"github.com/zetsux/gin-gorm-clean-starter/tests/support"
+	"github.com/zetsux/gin-gorm-clean-starter/support/base"
+	"github.com/zetsux/gin-gorm-clean-starter/tests/testutil"
 )
 
 // Helper function to return user token
@@ -63,7 +63,7 @@ func createUserAndGetToken(t *testing.T, server *gin.Engine, name, email, passwo
 
 // Test user registration endpoint
 func TestIntegration_UserRegistration(t *testing.T) {
-	testApp := support.SetupTestApp(t)
+	testApp := testutil.SetupTestApp(t)
 	server := testApp.Server
 
 	regReq := dto.UserRegisterRequest{
@@ -97,7 +97,7 @@ func TestIntegration_UserRegistration(t *testing.T) {
 
 // Test user registration with invalid data
 func TestIntegration_UserRegistration_InvalidData(t *testing.T) {
-	testApp := support.SetupTestApp(t)
+	testApp := testutil.SetupTestApp(t)
 	server := testApp.Server
 
 	testCases := []struct {
@@ -148,7 +148,7 @@ func TestIntegration_UserRegistration_InvalidData(t *testing.T) {
 
 // Test duplicate email registration
 func TestIntegration_UserRegistration_DuplicateEmail(t *testing.T) {
-	testApp := support.SetupTestApp(t)
+	testApp := testutil.SetupTestApp(t)
 	server := testApp.Server
 
 	regReq := dto.UserRegisterRequest{
@@ -179,7 +179,7 @@ func TestIntegration_UserRegistration_DuplicateEmail(t *testing.T) {
 
 // Test user login endpoint
 func TestIntegration_UserLogin(t *testing.T) {
-	testApp := support.SetupTestApp(t)
+	testApp := testutil.SetupTestApp(t)
 	server := testApp.Server
 
 	// First register a user
@@ -228,7 +228,7 @@ func TestIntegration_UserLogin(t *testing.T) {
 
 // Test user login with invalid credentials
 func TestIntegration_UserLogin_InvalidCredentials(t *testing.T) {
-	testApp := support.SetupTestApp(t)
+	testApp := testutil.SetupTestApp(t)
 	server := testApp.Server
 
 	testCases := []struct {

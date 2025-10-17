@@ -7,13 +7,13 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/zetsux/gin-gorm-clean-starter/common/base"
-	"github.com/zetsux/gin-gorm-clean-starter/tests/support"
+	"github.com/zetsux/gin-gorm-clean-starter/support/base"
+	"github.com/zetsux/gin-gorm-clean-starter/tests/testutil"
 )
 
 // Test get me endpoint
 func TestIntegration_GetMe(t *testing.T) {
-	testApp := support.SetupTestApp(t)
+	testApp := testutil.SetupTestApp(t)
 	server := testApp.Server
 
 	// Create user and get token
@@ -46,7 +46,7 @@ func TestIntegration_GetMe(t *testing.T) {
 
 // Test get me without authentication
 func TestIntegration_GetMe_Unauthorized(t *testing.T) {
-	testApp := support.SetupTestApp(t)
+	testApp := testutil.SetupTestApp(t)
 	server := testApp.Server
 
 	testCases := []struct {

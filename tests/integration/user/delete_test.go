@@ -7,14 +7,14 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/zetsux/gin-gorm-clean-starter/common/base"
 	"github.com/zetsux/gin-gorm-clean-starter/core/helper/errors"
-	"github.com/zetsux/gin-gorm-clean-starter/tests/support"
+	"github.com/zetsux/gin-gorm-clean-starter/support/base"
+	"github.com/zetsux/gin-gorm-clean-starter/tests/testutil"
 )
 
 // Test delete user endpoint
 func TestIntegration_DeleteUser(t *testing.T) {
-	testApp := support.SetupTestApp(t)
+	testApp := testutil.SetupTestApp(t)
 	server := testApp.Server
 
 	// Create user and get token
@@ -51,7 +51,7 @@ func TestIntegration_DeleteUser(t *testing.T) {
 
 // Test delete user without authentication
 func TestIntegration_DeleteUser_Unauthorized(t *testing.T) {
-	testApp := support.SetupTestApp(t)
+	testApp := testutil.SetupTestApp(t)
 	server := testApp.Server
 
 	req := httptest.NewRequest(http.MethodDelete, "/api/v1/users/me", nil)

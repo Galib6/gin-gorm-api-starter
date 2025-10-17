@@ -5,9 +5,9 @@ import (
 	"errors"
 	"math"
 
-	"github.com/zetsux/gin-gorm-clean-starter/common/base"
 	"github.com/zetsux/gin-gorm-clean-starter/core/entity"
 	errs "github.com/zetsux/gin-gorm-clean-starter/core/helper/errors"
+	"github.com/zetsux/gin-gorm-clean-starter/support/base"
 
 	"gorm.io/gorm"
 )

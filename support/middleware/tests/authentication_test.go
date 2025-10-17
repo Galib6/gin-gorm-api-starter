@@ -7,16 +7,30 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/require"
-	"github.com/zetsux/gin-gorm-clean-starter/common/middleware"
 	"github.com/zetsux/gin-gorm-clean-starter/core/service"
+	"github.com/zetsux/gin-gorm-clean-starter/support/middleware"
 )
 
-func TestAuthenticate_MissingToken(t *testing.T) {
+// --- Test Helpers ---
+
+func setupAuthenticationTest(t *testing.T) (*gin.Engine, service.JWTService) {
 	t.Parallel()
 	gin.SetMode(gin.TestMode)
 	r := gin.New()
+	r.Use(middleware.ErrorHandler())
+
 	jwtS := service.NewJWTService()
-	r.GET("/protected", middleware.Authenticate(jwtS), func(c *gin.Context) { c.Status(http.StatusOK) })
+	r.GET("/protected", middleware.Authenticate(jwtS), func(c *gin.Context) {
+		c.String(http.StatusOK, "ok")
+	})
+
+	return r, jwtS
+}
+
+// --- Tests ---
+
+func TestAuthenticate_MissingToken(t *testing.T) {
+	r, _ := setupAuthenticationTest(t)
 
 	req := httptest.NewRequest(http.MethodGet, "/protected", nil)
 	w := httptest.NewRecorder()
@@ -25,13 +39,7 @@ func TestAuthenticate_MissingToken(t *testing.T) {
 }
 
 func TestAuthenticate_ValidTokenAndRole(t *testing.T) {
-	t.Parallel()
-	gin.SetMode(gin.TestMode)
-	r := gin.New()
-	jwtS := service.NewJWTService()
-	r.GET("/protected", middleware.Authenticate(jwtS), func(c *gin.Context) {
-		c.String(http.StatusOK, "ok")
-	})
+	r, jwtS := setupAuthenticationTest(t)
 
 	token := jwtS.GenerateToken("abc", "user")
 	req := httptest.NewRequest(http.MethodGet, "/protected", nil)

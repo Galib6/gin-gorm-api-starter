@@ -3,8 +3,8 @@ package seeder
 import (
 	"errors"
 
-	"github.com/zetsux/gin-gorm-clean-starter/common/constant"
 	"github.com/zetsux/gin-gorm-clean-starter/core/entity"
+	"github.com/zetsux/gin-gorm-clean-starter/support/constant"
 	"gorm.io/gorm"
 )
 

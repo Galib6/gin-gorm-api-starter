@@ -34,26 +34,6 @@ An API starter template for projects based on Controller-Service-Repository (CSR
 │           ├── user.go
 │           └── etc
 │
-├── /support
-│   ├── /base
-│   │   └── model.go
-│   │   └── request.go
-│   │   └── response.go
-│   │   └── etc
-│   ├── /constant
-│   │   └── default.go
-│   │   └── enums.go
-│   │   └── etc
-│   ├── /middleware
-│   │   └── authentication.go
-│   │   └── cors.go
-│   │   └── authorization.go
-│   │   └── etc
-│   └── /util
-│       └── bcrypt.go
-│       └── file.go
-│       └── etc
-│
 ├── /config
 │   ├── db.go
 │   └── etc
@@ -74,9 +54,14 @@ An API starter template for projects based on Controller-Service-Repository (CSR
 │   │       ├── file.go
 │   │       ├── user.go
 │   │       └── etc
-│   ├── /repository
-│   │   └── user.go
-│   │   └── etc
+│   ├── /interface
+│   │   └── /query
+│   │       ├── user.go
+│   │       └── etc
+│   │   └── /repository
+│   │       ├── tx.go
+│   │       ├── user.go
+│   │       └── etc
 │   └── /service
 │       ├── user.go
 │       └── etc
@@ -87,6 +72,39 @@ An API starter template for projects based on Controller-Service-Repository (CSR
 │   │   └── etc
 │   └── migrator.go
 │
+├── /infrastructure
+│   ├── /query
+│   │   └── user.go
+│   │   └── etc
+│   └── /repository
+│       └── tx.go
+│       └── user.go
+│       └── etc
+│
+├── /provider
+│   ├── user.go
+│   └── etc
+│
+├── /support
+│   ├── /base
+│   │   └── model.go
+│   │   └── request.go
+│   │   └── response.go
+│   │   └── etc
+│   ├── /constant
+│   │   └── default.go
+│   │   └── enums.go
+│   │   └── etc
+│   ├── /middleware
+│   │   └── authentication.go
+│   │   └── cors.go
+│   │   └── authorization.go
+│   │   └── etc
+│   └── /util
+│       └── bcrypt.go
+│       └── file.go
+│       └── etc
+│
 ├── /tests
 │   ├── /testutil
 │   └── /integration
@@ -96,75 +114,101 @@ An API starter template for projects based on Controller-Service-Repository (CSR
 
 ### Explanation (EN)
 
-- `/api/v1` : The directory for things related to API like all available endpoints (route) and the handlers for each endpoints (controller). Subdirectory `/v1` is used for easy version control in case of several development phase.
+- `/api/v1` : The directory for things related to API like all available endpoints (routes) and the handlers for each endpoint (controller). Subdirectory `/v1` is used for easy version control in case of several development phases.
 
-  - `/controller` : The directory for things related to the Controller layer which is the part of program that handle requests and return responses.
-  - `/router` : The directory for things related with routing. Therefore filled with every available supported routes / endpoints along with the request method and used middleware.
-
-- `/support` : The directory for common supporting things that are frequently used all over the architectures.
-
-  - `/base` : The directory for base things such as variables, constants, and functions to be used in other directories. It consists of things like response, request, and model base structure.
-  - `/middleware` : The directory for Middlewares which are mechanism that intercept a HTTP request and response process before handled directly by the controller of an endpoint.
-  - `/util` : The directory to store utility / helper functions that can be used in other directories.
+  - `/controller` : The directory for things related to the Controller layer, which handles requests and returns responses.
+  - `/router` : The directory for things related to routing. Contains all supported routes/endpoints along with request methods and used middleware.
 
 - `/config` : The directory for things related to program configuration like database configuration.
 
-- `/core` : The directory for things related to the core side of the Back End. It consists of things like business logic, entities, and database interaction.
+- `/core` : The directory for things related to the core backend logic. Contains business logic, entities, and database interaction.
 
-  - `/entity` : The directory for things related to entities / models which are available on the database via migration that are represented by structs.
-  - `/helper` : The directory to store things that will be used to help the Back End side operates. It consist of useful things such as DTOs, error variables, and message constants.
+  - `/entity` : The directory for entities/models that are mapped to the database via migration.
+  - `/helper` : The directory to store items that help backend operations, such as DTOs, error variables, and message constants.
 
-    - `/dto` : The directory to store DTO (Data Transfer Object) which is a placeholder for other objects, mainly to store data for requests and responses.
-    - `/errors` : The directory to store stores error variables for each entity and other needs.
-    - `/messages` : The directory to store message constants for each entity.
+    - `/dto` : Stores DTO (Data Transfer Object) used as placeholders to transfer data for requests and responses.
+    - `/errors` : Stores error variables for each entity or other needs.
+    - `/messages` : Stores message constants for each entity or feature.
 
-  - `/repository` : The directory for things related to the Repository layer which is the layer that is responsible to interact directly with the database.
-  - `/service` : The directory for things related to the Service layer which is the layer that is responsible for the flow / business logic of the app.
+  - `/interface` : The directory for all core interfaces used by the service layer, including contracts for repository and query layers.
 
-- `/database` : The directory for things related to the database for example migrations and seeders.
+    - `/repository` : Interfaces for repository layer (entity CRUD).
+    - `/query` : Interfaces for query layer (read-only operations, projections).
 
-  - `/seeder` : The directory for things related to database seeding for each entity.
+  - `/service` : The directory for the Service layer, responsible for application flow and business logic.
 
-- `/tests` : The directory for things related to automated API testings (tests folder inside layers are for unit testing purposes)
+- `/database` : The directory for things related to database migrations and seeding.
 
-  - `/testutil` : The directory to store utility / helper functions for testing purposes
-  - `/integration`: The directory to store integration test functions
+  - `/seeder` : The directory for database seeders for each entity.
+
+- `/infrastructure` : The directory for implementations of interfaces defined in `/core/interface`.
+
+  - `/repository` : Implementations of repository interfaces, handling CRUD and transactional operations.
+  - `/query` : Implementations of query interfaces, handling read-only or optimized queries.
+
+- `/provider` : The directory for dependency injection setup, e.g., Samber/Do providers for wiring services, repositories, and queries.
+
+- `/support` : The directory for common supporting things that are frequently used across the architecture.
+
+  - `/base` : The directory for base structures such as variables, constants, and functions used in other directories. Includes response, request, and model base structures.
+  - `/middleware` : The directory for Middlewares, mechanisms that intercept HTTP requests/responses before they are handled by controllers.
+  - `/util` : The directory for utility/helper functions that can be used in other directories.
+
+- `/tests` : The directory for automated API testing (unit tests and integration tests).
+
+  - `/testutil` : Stores utility/helper functions for testing purposes.
+  - `/integration` : Stores integration test functions.
+
+- `main.go` : The entry point of the application.
 
 ### Explanation (ID)
 
-- `/api/v1` : Directory yang berisi berbagai hal yang berkaitan dengan API seperti daftar endpoint yang disediakan (route) serta handler (controller) dari setiap endpointnya. Subdirectory `/v1` sendiri digunakan untuk menyimpan beberapa versi dari API yang dapat ditambahkan sesuai kebutuhan.
+- `/api/v1` : Direktori yang berisi berbagai hal yang berkaitan dengan API seperti daftar endpoint yang disediakan (route) serta handler (controller) dari setiap endpoint. Subdirectory `/v1` digunakan untuk version control apabila ada beberapa versi API.
 
-  - `/controller` : Directory untuk menyimpan hal-hal terkait dengan Controller yang merupakan bagian dari program yang berfungsi menerima request dan memberikan response.
-  - `/router` : Directory untuk menyimpan hal-hal yang terkait dengan routing. Berisikan routes atau endpoints yang didukung beserta dengan metode requestnya.
+  - `/controller` : Direktori untuk menyimpan hal-hal terkait Controller, yang bertugas menerima request dan memberikan response.
+  - `/router` : Direktori untuk menyimpan hal-hal yang terkait dengan routing, berisi semua route/endpoints yang didukung beserta metode request dan middleware yang digunakan.
 
-- `/support` : Directory yang berisi berbagai hal umum pembantu untuk digunakan di seluruh directory.
+- `/config` : Direktori yang berisi hal-hal terkait konfigurasi aplikasi, misalnya konfigurasi database.
 
-  - `/base` : Directory yang berisi berbagai variabel, konstanta, maupun fungsi standar untuk digunakan di berbagai directory lainnya seperti response, request, error, struktur dasar model, konstanta, dan lain-lain.
-  - `/middleware` : Directory untuk menyimpan Middleware yang merupakan mekanisme yang menengahi proses HTTP request dan response sebelum ditangani secara langsung oleh controller setiap route.
-  - `/util` : Directory untuk kode terkait fungsi-fungsi utilitas atau pembantu lainnya yang bisa digunakan di berbagai directory lainnya.
+- `/core` : Direktori yang berisi bagian inti dari backend. Meliputi business logic, entitas, dan interaksi dengan database.
 
-- `/config` : Directory yang berisi hal terkait konfigurasi aplikasi. Contohnya seperti konfigurasi database.
+  - `/entity` : Direktori untuk menyimpan entitas atau model yang digunakan di migrasi dan aplikasi.
+  - `/helper` : Direktori untuk menyimpan hal-hal yang membantu operasi backend, seperti DTO, variabel error, dan konstanta pesan.
 
-- `/core` : Directory yang berisi berbagai hal yang berkaitan dengan sisi inti dari Back End. Meliputi business logic, entitas, maupun interaksi dengan database.
+    - `/dto` : Direktori untuk menyimpan DTO (Data Transfer Object), placeholder untuk memindahkan data request dan response.
+    - `/errors` : Direktori untuk menyimpan variabel error untuk setiap entitas maupun kebutuhan lain.
+    - `/messages` : Direktori untuk menyimpan konstanta pesan untuk response API.
 
-  - `/entity` : Directory untuk menyimpan entitas atau model yang digunakan baik di migrasi maupun di aplikasi.
-  - `/helper` : The directory to store things that will be used to help the Back End side operates. It consist of useful things such as DTOs, error variables, and message constants.
+  - `/interface` : Direktori untuk menyimpan semua interface inti yang digunakan service layer, termasuk kontrak untuk repository dan query.
 
-    - `/dto` : Directory untuk menyimpan DTO (Data Transfer Object) adalah placeholder untuk suatu object lain yang digunakan untuk menampung data request dan response.
-    - `/errors` : Directory untuk menyimpan variabel-variabel error untuk baik yang spesifik untuk setiap entitas maupun yang lain.
-    - `/messages` : Directory untuk menyimpan konstanta pesan untuk digunakan dalam response API.
+    - `/repository` : Interface untuk repository (CRUD entitas).
+    - `/query` : Interface untuk query (read-only, projections).
 
-  - `/repository` : Directory untuk menyimpan hal-hal terkait Repository yang merupakan lapisan yang berhubungan langsung dengan database.
-  - `/service` : Directory untuk menyimpan hal-hal terkait Service yang merupakan lapisan yang bertanggung jawab menangani alur atau logika bisnis aplikasi.
+  - `/service` : Direktori untuk service layer, yang menangani alur aplikasi dan logika bisnis.
 
-- `/database` : Directory untuk menyimpan hal-hal terkait migrasi dan juga seeding terhadap database.
+- `/database` : Direktori untuk hal-hal terkait migrasi dan seeding database.
 
-  - `/seeder` : Directory untuk menyimpan hal-hal yang diperlukan untuk seeding terhadap database dengan dipisahkan sesuai entitas.
+  - `/seeder` : Direktori untuk database seeding tiap entitas.
 
-- `/tests` : Directory untuk menyimpan hal-hal terkait automated testing untuk API (folder tests pada setiap layer tersedia untuk unit testing)
+- `/infrastructure` : Direktori untuk implementasi interface yang ada di `/core/interface`.
 
-  - `/testutil` : Direktori untuk menyimpan fungsi-fungsi pembantu dalam konteks testing
-  - `/integration`: Direktori untuk menyimpan fungsi-fungsi integration testing
+  - `/repository` : Implementasi repository, menangani operasi CRUD dan transaksi.
+  - `/query` : Implementasi query, menangani operasi read-only atau query yang dioptimalkan.
+
+- `/provider` : Direktori untuk setup dependency injection, misalnya provider Samber/Do untuk menghubungkan service, repository, dan query.
+
+- `/support` : Direktori yang berisi hal-hal umum pembantu untuk digunakan di seluruh project.
+
+  - `/base` : Direktori yang berisi struktur dasar seperti variabel, konstanta, dan fungsi yang digunakan di directory lain. Termasuk response, request, dan model base structure.
+  - `/middleware` : Direktori untuk Middleware, mekanisme yang menengahi proses HTTP request/response sebelum ditangani controller.
+  - `/util` : Direktori untuk fungsi utilitas/pembantu yang dapat digunakan di berbagai directory.
+
+- `/tests` : Direktori untuk automated API testing (unit dan integration tests).
+
+  - `/testutil` : Menyimpan fungsi utilitas/pembantu untuk testing.
+  - `/integration` : Menyimpan fungsi integration testing.
+
+- `main.go` : Titik masuk (entry point) aplikasi.
 
 ## Pre-requisites
 

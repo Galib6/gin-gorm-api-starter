@@ -7,8 +7,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/zetsux/gin-gorm-clean-starter/core/entity"
-	"github.com/zetsux/gin-gorm-clean-starter/core/repository"
-	"github.com/zetsux/gin-gorm-clean-starter/support/base"
+	repository_interface "github.com/zetsux/gin-gorm-clean-starter/core/interface/repository"
+	"github.com/zetsux/gin-gorm-clean-starter/infrastructure/repository"
 	"github.com/zetsux/gin-gorm-clean-starter/support/constant"
 	support "github.com/zetsux/gin-gorm-clean-starter/tests/testutil"
 	"github.com/zetsux/gin-gorm-clean-starter/tests/testutil/factory"
@@ -16,11 +16,11 @@ import (
 
 // --- Test Helpers ---
 
-func setupUserRepositoryTest(t *testing.T) (repository.UserRepository, context.Context) {
+func setupUserRepositoryTest(t *testing.T) (repository_interface.UserRepository, context.Context) {
 	t.Helper()
 
 	db := support.NewTestDB(t)
-	ur := repository.NewUserRepository(repository.NewTxRepository(db))
+	ur := repository.NewUserRepository(db)
 	ctx := context.Background()
 
 	return ur, ctx
@@ -69,26 +69,6 @@ func TestUserRepository_UpdateUser(t *testing.T) {
 	edited, err := ur.UpdateUser(ctx, nil, edit)
 	require.NoError(t, err)
 	require.Equal(t, newEmail, edited.Email)
-}
-
-func TestUserRepository_GetAllUsers_PaginationAndSearch(t *testing.T) {
-	ur, _ := setupUserRepositoryTest(t)
-
-	_ = factory.SeedUsers(t, ur, 15)
-
-	// no pagination
-	users, _, total, err := ur.GetAllUsers(context.Background(), nil, base.GetsRequest{})
-	require.NoError(t, err)
-	require.GreaterOrEqual(t, int(total), 15)
-	require.GreaterOrEqual(t, len(users), 15)
-
-	// with pagination
-	req := base.GetsRequest{Page: 1, PerPage: 10}
-	users, last, total, err := ur.GetAllUsers(context.Background(), nil, req)
-	require.NoError(t, err)
-	require.Equal(t, int64(2), last)
-	require.Equal(t, int64(15), total)
-	require.Equal(t, 10, len(users))
 }
 
 func TestUserRepository_DeleteUserByID(t *testing.T) {

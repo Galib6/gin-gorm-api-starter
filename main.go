@@ -8,6 +8,7 @@ import (
 	"github.com/zetsux/gin-gorm-clean-starter/api/v1/router"
 	"github.com/zetsux/gin-gorm-clean-starter/config"
 	"github.com/zetsux/gin-gorm-clean-starter/provider"
+	"github.com/zetsux/gin-gorm-clean-starter/support/constant"
 	"github.com/zetsux/gin-gorm-clean-starter/support/middleware"
 	"gorm.io/gorm"
 
@@ -19,7 +20,7 @@ func main() {
 	var injector = do.New()
 	provider.SetupDependencies(injector)
 
-	db := do.MustInvokeNamed[*gorm.DB](injector, provider.DATABASE)
+	db := do.MustInvokeNamed[*gorm.DB](injector, constant.DBInjectorKey)
 	defer config.DBClose(db)
 
 	// Setting Up Server

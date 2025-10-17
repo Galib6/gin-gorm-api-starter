@@ -52,7 +52,7 @@ func setupTemporaryFileDir(t *testing.T) string {
 
 func TestUserService_ChangePicture(t *testing.T) {
 	tmpDir := setupTemporaryFileDir(t)
-	us, repo, ctx := setupUserServiceMock()
+	us, repo, _, ctx := setupUserServiceMock()
 
 	expected := entity.User{ID: uuid.New(), Name: "P", Email: "p@mail.test"}
 	repo.On("GetUserByPrimaryKey", ctx, (*gorm.DB)(nil), "email", "p@mail.test").Return(entity.User{}, errors.ErrUserNotFound).Once()
@@ -77,7 +77,7 @@ func TestUserService_ChangePicture(t *testing.T) {
 
 func TestUserService_DeletePicture(t *testing.T) {
 	tmpDir := setupTemporaryFileDir(t)
-	us, repo, ctx := setupUserServiceMock()
+	us, repo, _, ctx := setupUserServiceMock()
 
 	picPath := "user_picture/" + uuid.New().String()
 	expectedUser := entity.User{

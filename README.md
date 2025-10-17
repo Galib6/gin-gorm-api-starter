@@ -88,7 +88,7 @@ An API starter template for projects based on Controller-Service-Repository (CSR
 │   └── migrator.go
 │
 ├── /tests
-│   ├── /support
+│   ├── /testutil
 │   └── /integration
 │
 └── main.go
@@ -127,7 +127,7 @@ An API starter template for projects based on Controller-Service-Repository (CSR
 
 - `/tests` : The directory for things related to automated API testings (tests folder inside layers are for unit testing purposes)
 
-  - `/support` : The directory to store utility / helper functions for testing purposes
+  - `/testutil` : The directory to store utility / helper functions for testing purposes
   - `/integration`: The directory to store integration test functions
 
 ### Explanation (ID)
@@ -163,7 +163,7 @@ An API starter template for projects based on Controller-Service-Repository (CSR
 
 - `/tests` : Directory untuk menyimpan hal-hal terkait automated testing untuk API (folder tests pada setiap layer tersedia untuk unit testing)
 
-  - `/support` : Direktori untuk menyimpan fungsi-fungsi pembantu dalam konteks testing
+  - `/testutil` : Direktori untuk menyimpan fungsi-fungsi pembantu dalam konteks testing
   - `/integration`: Direktori untuk menyimpan fungsi-fungsi integration testing
 
 ## Pre-requisites

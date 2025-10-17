@@ -11,13 +11,13 @@ import (
 	"github.com/zetsux/gin-gorm-clean-starter/common/base"
 	"github.com/zetsux/gin-gorm-clean-starter/common/constant"
 	"github.com/zetsux/gin-gorm-clean-starter/core/helper/dto"
-	"github.com/zetsux/gin-gorm-clean-starter/tests/support"
-	"github.com/zetsux/gin-gorm-clean-starter/tests/support/factory"
+	"github.com/zetsux/gin-gorm-clean-starter/tests/testutil"
+	"github.com/zetsux/gin-gorm-clean-starter/tests/testutil/factory"
 )
 
 // Test get users by admin endpoint
 func TestIntegration_GetUsersByAdmin(t *testing.T) {
-	testApp := support.SetupTestApp(t)
+	testApp := testutil.SetupTestApp(t)
 	server := testApp.Server
 
 	// Create admin user and get token
@@ -51,7 +51,7 @@ func TestIntegration_GetUsersByAdmin(t *testing.T) {
 
 // Test get users by non-admin
 func TestIntegration_GetUsersByAdmin_Forbidden(t *testing.T) {
-	testApp := support.SetupTestApp(t)
+	testApp := testutil.SetupTestApp(t)
 	server := testApp.Server
 
 	// Create regular user and get token
@@ -72,7 +72,7 @@ func TestIntegration_GetUsersByAdmin_Forbidden(t *testing.T) {
 
 // Test delete user by admin endpoint
 func TestIntegration_DeleteUserByAdmin(t *testing.T) {
-	testApp := support.SetupTestApp(t)
+	testApp := testutil.SetupTestApp(t)
 	server := testApp.Server
 
 	// Create admin user and get token
@@ -118,7 +118,7 @@ func TestIntegration_DeleteUserByAdmin(t *testing.T) {
 
 // Test delete user by non-admin
 func TestIntegration_DeleteUserByAdmin_Forbidden(t *testing.T) {
-	testApp := support.SetupTestApp(t)
+	testApp := testutil.SetupTestApp(t)
 	server := testApp.Server
 
 	// Create regular user and get token
@@ -142,7 +142,7 @@ func TestIntegration_DeleteUserByAdmin_Forbidden(t *testing.T) {
 
 // Test update user by admin endpoint
 func TestIntegration_UpdateUserByAdmin(t *testing.T) {
-	testApp := support.SetupTestApp(t)
+	testApp := testutil.SetupTestApp(t)
 	server := testApp.Server
 
 	// Create admin user and get token
@@ -186,7 +186,7 @@ func TestIntegration_UpdateUserByAdmin(t *testing.T) {
 
 // Test update user by non-admin
 func TestIntegration_UpdateUserByAdmin_Forbidden(t *testing.T) {
-	testApp := support.SetupTestApp(t)
+	testApp := testutil.SetupTestApp(t)
 	server := testApp.Server
 
 	// Create regular user and get token

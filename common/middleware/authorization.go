@@ -7,27 +7,31 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/zetsux/gin-gorm-clean-starter/common/base"
 	"github.com/zetsux/gin-gorm-clean-starter/common/constant"
+	"github.com/zetsux/gin-gorm-clean-starter/core/helper/messages"
 )
 
 func Authorize(roles ...string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		roleRes, exists := c.Get("ROLE")
 		if !exists {
-			response := base.CreateFailResponse("Failed to process request", "", http.StatusUnauthorized)
-			c.AbortWithStatusJSON(http.StatusUnauthorized, response)
+			_ = c.Error(base.NewAppError(http.StatusUnauthorized,
+				messages.MsgAuthFailedProcess, nil))
+			c.Abort()
 			return
 		}
 
 		role, ok := roleRes.(string)
 		if !ok {
-			response := base.CreateFailResponse("Failed to process request", "", http.StatusUnauthorized)
-			c.AbortWithStatusJSON(http.StatusUnauthorized, response)
+			_ = c.Error(base.NewAppError(http.StatusUnauthorized,
+				messages.MsgAuthFailedProcess, nil))
+			c.Abort()
 			return
 		}
 
 		if role != constant.EnumRoleAdmin && !slices.Contains(roles, role) {
-			response := base.CreateFailResponse("Action unauthorized", "", http.StatusUnauthorized)
-			c.AbortWithStatusJSON(http.StatusForbidden, response)
+			_ = c.Error(base.NewAppError(http.StatusForbidden,
+				messages.MsgAuthActionUnauthorized, nil))
+			c.Abort()
 			return
 		}
 

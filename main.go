@@ -26,6 +26,7 @@ func main() {
 	server := gin.Default()
 	server.Use(
 		middleware.CORSMiddleware(),
+		middleware.ErrorHandler(),
 	)
 
 	// Setting Up Routes

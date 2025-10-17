@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/zetsux/gin-gorm-clean-starter/common/base"
+	"github.com/zetsux/gin-gorm-clean-starter/core/helper/messages"
 	"github.com/zetsux/gin-gorm-clean-starter/core/service"
 
 	"github.com/gin-gonic/gin"
@@ -14,34 +15,39 @@ func Authenticate(jwtService service.JWTService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
-			response := base.CreateFailResponse("No token found", "", http.StatusUnauthorized)
-			c.AbortWithStatusJSON(http.StatusUnauthorized, response)
+			_ = c.Error(base.NewAppError(http.StatusUnauthorized,
+				messages.MsgAuthNoToken, nil))
+			c.Abort()
 			return
 		}
 		if !strings.Contains(authHeader, "Bearer ") {
-			response := base.CreateFailResponse("No token found", "", http.StatusUnauthorized)
-			c.AbortWithStatusJSON(http.StatusUnauthorized, response)
+			_ = c.Error(base.NewAppError(http.StatusUnauthorized,
+				messages.MsgAuthNoToken, nil))
+			c.Abort()
 			return
 		}
 		authHeader = strings.ReplaceAll(authHeader, "Bearer ", "")
 		token, err := jwtService.ValidateToken(authHeader)
 		if err != nil {
-			response := base.CreateFailResponse("Invalid token", "", http.StatusUnauthorized)
-			c.AbortWithStatusJSON(http.StatusUnauthorized, response)
+			_ = c.Error(base.NewAppError(http.StatusUnauthorized,
+				messages.MsgAuthInvalidToken, err))
+			c.Abort()
 			return
 		}
 
 		if !token.Valid {
-			response := base.CreateFailResponse("Invalid token", "", http.StatusUnauthorized)
-			c.AbortWithStatusJSON(http.StatusForbidden, response)
+			_ = c.Error(base.NewAppError(http.StatusUnauthorized,
+				messages.MsgAuthInvalidToken, nil))
+			c.Abort()
 			return
 		}
 
 		// get role from token
 		idRes, roleRes, err := jwtService.GetAttrByToken(authHeader)
 		if err != nil {
-			response := base.CreateFailResponse("Failed to process request", "", http.StatusUnauthorized)
-			c.AbortWithStatusJSON(http.StatusUnauthorized, response)
+			_ = c.Error(base.NewAppError(http.StatusUnauthorized,
+				messages.MsgAuthFailedProcess, err))
+			c.Abort()
 			return
 		}
 		c.Set("ID", idRes)

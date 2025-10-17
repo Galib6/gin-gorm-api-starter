@@ -10,12 +10,12 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/zetsux/gin-gorm-clean-starter/common/base"
 	"github.com/zetsux/gin-gorm-clean-starter/core/helper/dto"
-	"github.com/zetsux/gin-gorm-clean-starter/tests/support"
+	"github.com/zetsux/gin-gorm-clean-starter/tests/testutil"
 )
 
 // Test update user name endpoint
 func TestIntegration_UpdateUserName(t *testing.T) {
-	testApp := support.SetupTestApp(t)
+	testApp := testutil.SetupTestApp(t)
 	server := testApp.Server
 
 	// Create user and get token
@@ -65,7 +65,7 @@ func TestIntegration_UpdateUserName(t *testing.T) {
 
 // Test update user name without authentication
 func TestIntegration_UpdateUserName_Unauthorized(t *testing.T) {
-	testApp := support.SetupTestApp(t)
+	testApp := testutil.SetupTestApp(t)
 	server := testApp.Server
 
 	updateReq := dto.UserNameUpdateRequest{Name: "New Name"}
@@ -85,7 +85,7 @@ func TestIntegration_UpdateUserName_Unauthorized(t *testing.T) {
 
 // Test multiple users isolation
 func TestIntegration_MultipleUsersIsolation(t *testing.T) {
-	testApp := support.SetupTestApp(t)
+	testApp := testutil.SetupTestApp(t)
 	server := testApp.Server
 
 	// Create multiple users

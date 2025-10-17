@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/zetsux/gin-gorm-clean-starter/common/base"
+	"github.com/zetsux/gin-gorm-clean-starter/support/base"
 )
 
 func ErrorHandler() gin.HandlerFunc {

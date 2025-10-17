@@ -6,10 +6,10 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
-	"github.com/zetsux/gin-gorm-clean-starter/common/base"
-	"github.com/zetsux/gin-gorm-clean-starter/common/constant"
 	"github.com/zetsux/gin-gorm-clean-starter/core/entity"
 	"github.com/zetsux/gin-gorm-clean-starter/core/repository"
+	"github.com/zetsux/gin-gorm-clean-starter/support/base"
+	"github.com/zetsux/gin-gorm-clean-starter/support/constant"
 	support "github.com/zetsux/gin-gorm-clean-starter/tests/testutil"
 	"github.com/zetsux/gin-gorm-clean-starter/tests/testutil/factory"
 )

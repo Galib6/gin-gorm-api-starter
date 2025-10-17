@@ -9,8 +9,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/require"
-	"github.com/zetsux/gin-gorm-clean-starter/common/base"
 	"github.com/zetsux/gin-gorm-clean-starter/core/helper/dto"
+	"github.com/zetsux/gin-gorm-clean-starter/support/base"
 	"github.com/zetsux/gin-gorm-clean-starter/tests/testutil"
 )
 

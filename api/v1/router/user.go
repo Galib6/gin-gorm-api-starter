@@ -3,8 +3,8 @@ package router
 import (
 	"github.com/samber/do"
 	"github.com/zetsux/gin-gorm-clean-starter/api/v1/controller"
-	"github.com/zetsux/gin-gorm-clean-starter/common/middleware"
 	"github.com/zetsux/gin-gorm-clean-starter/core/service"
+	"github.com/zetsux/gin-gorm-clean-starter/support/middleware"
 
 	"github.com/gin-gonic/gin"
 )

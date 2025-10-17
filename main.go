@@ -6,9 +6,9 @@ import (
 
 	"github.com/samber/do"
 	"github.com/zetsux/gin-gorm-clean-starter/api/v1/router"
-	"github.com/zetsux/gin-gorm-clean-starter/common/middleware"
 	"github.com/zetsux/gin-gorm-clean-starter/config"
 	"github.com/zetsux/gin-gorm-clean-starter/provider"
+	"github.com/zetsux/gin-gorm-clean-starter/support/middleware"
 	"gorm.io/gorm"
 
 	"github.com/gin-gonic/gin"

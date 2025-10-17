@@ -15,11 +15,11 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/zetsux/gin-gorm-clean-starter/api/v1/controller"
 	"github.com/zetsux/gin-gorm-clean-starter/api/v1/router"
-	"github.com/zetsux/gin-gorm-clean-starter/common/base"
-	"github.com/zetsux/gin-gorm-clean-starter/common/middleware"
 	"github.com/zetsux/gin-gorm-clean-starter/core/helper/dto"
 	"github.com/zetsux/gin-gorm-clean-starter/core/helper/errors"
 	"github.com/zetsux/gin-gorm-clean-starter/core/service"
+	"github.com/zetsux/gin-gorm-clean-starter/support/base"
+	"github.com/zetsux/gin-gorm-clean-starter/support/middleware"
 )
 
 // --- Mock Services ---

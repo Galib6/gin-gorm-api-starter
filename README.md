@@ -141,7 +141,7 @@ An API starter template for projects based on Controller-Service-Repository (CSR
 
   - `/seeder` : The directory for database seeders for each entity.
 
-- `/infrastructure` : The directory for implementations of interfaces defined in `/core/interface`.
+- `/infrastructure` : The directory for implementations of interfaces defined in `/core/interface`, it's the only layer capable of interacting directly with the database.
 
   - `/repository` : Implementations of repository interfaces, handling CRUD and transactional operations.
   - `/query` : Implementations of query interfaces, handling read-only or optimized queries.
@@ -190,7 +190,7 @@ An API starter template for projects based on Controller-Service-Repository (CSR
 
   - `/seeder` : Direktori untuk database seeding tiap entitas.
 
-- `/infrastructure` : Direktori untuk implementasi interface yang ada di `/core/interface`.
+- `/infrastructure` : Direktori untuk implementasi interface yang ada di `/core/interface`. Merupakan satu-satunya layer yang dapat berinteraksi secara langsung dengan basis data.
 
   - `/repository` : Implementasi repository, menangani operasi CRUD dan transaksi.
   - `/query` : Implementasi query, menangani operasi read-only atau query yang dioptimalkan.

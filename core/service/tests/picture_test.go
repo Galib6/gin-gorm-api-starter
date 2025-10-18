@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/zetsux/gin-gorm-clean-starter/core/entity"
 	"github.com/zetsux/gin-gorm-clean-starter/core/helper/dto"
-	"github.com/zetsux/gin-gorm-clean-starter/core/helper/errors"
+	errs "github.com/zetsux/gin-gorm-clean-starter/core/helper/errors"
 	"gorm.io/gorm"
 )
 
@@ -55,7 +55,7 @@ func TestUserService_ChangePicture(t *testing.T) {
 	us, repo, _, ctx := setupUserServiceMock()
 
 	expected := entity.User{ID: uuid.New(), Name: "P", Email: "p@mail.test"}
-	repo.On("GetUserByPrimaryKey", ctx, (*gorm.DB)(nil), "email", "p@mail.test").Return(entity.User{}, errors.ErrUserNotFound).Once()
+	repo.On("GetUserByPrimaryKey", ctx, (*gorm.DB)(nil), "email", "p@mail.test").Return(entity.User{}, errs.ErrUserNotFound).Once()
 	repo.On("CreateNewUser", ctx, (*gorm.DB)(nil), mock.AnythingOfType("entity.User")).Return(expected, nil)
 
 	created, err := us.CreateNewUser(ctx, dto.UserRegisterRequest{Name: "P", Email: "p@mail.test", Password: "secret"})
@@ -64,9 +64,8 @@ func TestUserService_ChangePicture(t *testing.T) {
 	require.NoError(t, err)
 
 	fh := buildFileHeader(t, "picture", "pic.txt", []byte("hello"))
-	expectedUpdatedUser := entity.User{ID: createdID, Name: created.Name, Email: created.Email}
 	repo.On("GetUserByPrimaryKey", ctx, (*gorm.DB)(nil), "id", createdUser.ID.String()).Return(createdUser, nil).Once()
-	repo.On("UpdateUser", ctx, (*gorm.DB)(nil), mock.AnythingOfType("entity.User")).Return(expectedUpdatedUser, nil)
+	repo.On("UpdateUser", ctx, (*gorm.DB)(nil), mock.AnythingOfType("entity.User")).Return(nil)
 
 	updated, err := us.ChangePicture(ctx, dto.UserChangePictureRequest{Picture: fh}, created.ID)
 	require.NoError(t, err)
@@ -94,7 +93,7 @@ func TestUserService_DeletePicture(t *testing.T) {
 	repo.On("GetUserByPrimaryKey", ctx, (*gorm.DB)(nil), "id", expectedUser.ID.String()).
 		Return(expectedUser, nil).Once()
 	repo.On("UpdateUser", ctx, (*gorm.DB)(nil), mock.AnythingOfType("entity.User")).
-		Return(entity.User{ID: expectedUser.ID}, nil)
+		Return(nil)
 
 	err := us.DeletePicture(ctx, expectedUser.ID.String())
 	require.NoError(t, err)

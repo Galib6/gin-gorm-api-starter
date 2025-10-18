@@ -9,16 +9,16 @@ import (
 	"github.com/zetsux/gin-gorm-clean-starter/core/entity"
 	"github.com/zetsux/gin-gorm-clean-starter/core/helper/dto"
 	errs "github.com/zetsux/gin-gorm-clean-starter/core/helper/errors"
-	query_interface "github.com/zetsux/gin-gorm-clean-starter/core/interface/query"
-	repository_interface "github.com/zetsux/gin-gorm-clean-starter/core/interface/repository"
+	queryiface "github.com/zetsux/gin-gorm-clean-starter/core/interface/query"
+	repositoryiface "github.com/zetsux/gin-gorm-clean-starter/core/interface/repository"
 	"github.com/zetsux/gin-gorm-clean-starter/support/base"
 	"github.com/zetsux/gin-gorm-clean-starter/support/constant"
 	"github.com/zetsux/gin-gorm-clean-starter/support/util"
 )
 
 type userService struct {
-	userRepository repository_interface.UserRepository
-	userQuery      query_interface.UserQuery
+	userRepository repositoryiface.UserRepository
+	userQuery      queryiface.UserQuery
 }
 
 type UserService interface {
@@ -26,14 +26,14 @@ type UserService interface {
 	CreateNewUser(ctx context.Context, ud dto.UserRegisterRequest) (dto.UserResponse, error)
 	GetAllUsers(ctx context.Context, req base.GetsRequest) ([]dto.UserResponse, base.PaginationResponse, error)
 	GetUserByPrimaryKey(ctx context.Context, key string, value string) (dto.UserResponse, error)
-	UpdateSelfName(ctx context.Context, ud dto.UserNameUpdateRequest, id string) (dto.UserResponse, error)
-	UpdateUserByID(ctx context.Context, ud dto.UserUpdateRequest, id string) (dto.UserResponse, error)
+	UpdateSelfName(ctx context.Context, ud dto.UserNameUpdateRequest) (dto.UserResponse, error)
+	UpdateUserByID(ctx context.Context, ud dto.UserUpdateRequest) (dto.UserResponse, error)
 	DeleteUserByID(ctx context.Context, id string) error
 	ChangePicture(ctx context.Context, req dto.UserChangePictureRequest, userID string) (dto.UserResponse, error)
 	DeletePicture(ctx context.Context, userID string) error
 }
 
-func NewUserService(userR repository_interface.UserRepository, userQ query_interface.UserQuery) UserService {
+func NewUserService(userR repositoryiface.UserRepository, userQ queryiface.UserQuery) UserService {
 	return &userService{userRepository: userR, userQuery: userQ}
 }
 
@@ -150,26 +150,30 @@ func (us *userService) GetUserByPrimaryKey(ctx context.Context, key string, val 
 }
 
 func (us *userService) UpdateSelfName(ctx context.Context,
-	ud dto.UserNameUpdateRequest, id string) (dto.UserResponse, error) {
-	user, err := us.userRepository.GetUserByPrimaryKey(ctx, nil, constant.DBAttrID, id)
+	ud dto.UserNameUpdateRequest) (dto.UserResponse, error) {
+	user, err := us.userRepository.GetUserByPrimaryKey(ctx, nil, constant.DBAttrID, ud.ID)
 	if err != nil {
 		return dto.UserResponse{}, err
 	}
 
-	user, err = us.userRepository.UpdateNameUser(ctx, nil, ud.Name, user)
+	userEdit := entity.User{
+		ID:   user.ID,
+		Name: ud.Name,
+	}
+	err = us.userRepository.UpdateUser(ctx, nil, userEdit)
 	if err != nil {
 		return dto.UserResponse{}, err
 	}
 
 	return dto.UserResponse{
-		ID:   user.ID.String(),
-		Name: user.Name,
+		ID:   userEdit.ID.String(),
+		Name: userEdit.Name,
 	}, nil
 }
 
 func (us *userService) UpdateUserByID(ctx context.Context,
-	ud dto.UserUpdateRequest, id string) (dto.UserResponse, error) {
-	user, err := us.userRepository.GetUserByPrimaryKey(ctx, nil, constant.DBAttrID, id)
+	ud dto.UserUpdateRequest) (dto.UserResponse, error) {
+	user, err := us.userRepository.GetUserByPrimaryKey(ctx, nil, constant.DBAttrID, ud.ID)
 	if err != nil {
 		return dto.UserResponse{}, err
 	}
@@ -196,27 +200,16 @@ func (us *userService) UpdateUserByID(ctx context.Context,
 		Role:     ud.Role,
 		Password: ud.Password,
 	}
-
-	edited, err := us.userRepository.UpdateUser(ctx, nil, userEdit)
+	err = us.userRepository.UpdateUser(ctx, nil, userEdit)
 	if err != nil {
 		return dto.UserResponse{}, err
 	}
 
-	if edited.Name == "" {
-		edited.Name = user.Name
-	}
-	if edited.Email == "" {
-		edited.Email = user.Email
-	}
-	if edited.Role == "" {
-		edited.Role = user.Role
-	}
-
 	return dto.UserResponse{
-		ID:    edited.ID.String(),
-		Name:  edited.Name,
-		Email: edited.Email,
-		Role:  edited.Role,
+		ID:    userEdit.ID.String(),
+		Name:  userEdit.Name,
+		Email: userEdit.Email,
+		Role:  userEdit.Role,
 	}, nil
 }
 
@@ -256,29 +249,23 @@ func (us *userService) ChangePicture(ctx context.Context,
 
 	picID := uuid.New()
 	picPath := fmt.Sprintf("user_picture/%v", picID)
+	if err := util.UploadFile(req.Picture, picPath); err != nil {
+		return dto.UserResponse{}, err
+	}
 
 	userEdit := entity.User{
 		ID:      user.ID,
 		Picture: &picPath,
 	}
-
-	if err := util.UploadFile(req.Picture, picPath); err != nil {
-		return dto.UserResponse{}, err
-	}
-
-	userUpdate, err := us.userRepository.UpdateUser(ctx, nil, userEdit)
+	err = us.userRepository.UpdateUser(ctx, nil, userEdit)
 	if err != nil {
 		return dto.UserResponse{}, err
 	}
 
 	userResp := dto.UserResponse{
-		ID:      userUpdate.ID.String(),
+		ID:      userEdit.ID.String(),
 		Picture: picPath,
 	}
-	if userUpdate.Picture != nil {
-		userResp.Picture = *userUpdate.Picture
-	}
-
 	return userResp, nil
 }
 
@@ -306,7 +293,7 @@ func (us *userService) DeletePicture(ctx context.Context, userID string) error {
 		Picture: &emptyString,
 	}
 
-	_, err = us.userRepository.UpdateUser(ctx, nil, userEdit)
+	err = us.userRepository.UpdateUser(ctx, nil, userEdit)
 	if err != nil {
 		return err
 	}

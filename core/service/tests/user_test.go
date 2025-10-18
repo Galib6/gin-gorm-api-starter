@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/zetsux/gin-gorm-clean-starter/core/entity"
 	"github.com/zetsux/gin-gorm-clean-starter/core/helper/dto"
-	"github.com/zetsux/gin-gorm-clean-starter/core/helper/errors"
+	errs "github.com/zetsux/gin-gorm-clean-starter/core/helper/errors"
 	"github.com/zetsux/gin-gorm-clean-starter/core/service"
 	"github.com/zetsux/gin-gorm-clean-starter/support/base"
 	"github.com/zetsux/gin-gorm-clean-starter/support/util"
@@ -37,14 +37,9 @@ func (m *MockUserRepository) GetUserByPrimaryKey(ctx context.Context, tx *gorm.D
 	return args.Get(0).(entity.User), args.Error(1)
 }
 
-func (m *MockUserRepository) UpdateNameUser(ctx context.Context, tx *gorm.DB, name string, user entity.User) (entity.User, error) {
-	args := m.Called(ctx, tx, name, user)
-	return args.Get(0).(entity.User), args.Error(1)
-}
-
-func (m *MockUserRepository) UpdateUser(ctx context.Context, tx *gorm.DB, user entity.User) (entity.User, error) {
+func (m *MockUserRepository) UpdateUser(ctx context.Context, tx *gorm.DB, user entity.User) error {
 	args := m.Called(ctx, tx, user)
-	return args.Get(0).(entity.User), args.Error(1)
+	return args.Error(0)
 }
 
 func (m *MockUserRepository) DeleteUserByID(ctx context.Context, tx *gorm.DB, id string) error {
@@ -101,7 +96,7 @@ func TestUserService_CreateNewUser(t *testing.T) {
 	us, repo, _, ctx := setupUserServiceMock()
 
 	expected := entity.User{ID: uuid.New(), Name: "A", Email: "a@mail.test"}
-	repo.On("GetUserByPrimaryKey", ctx, (*gorm.DB)(nil), "email", "a@mail.test").Return(entity.User{}, errors.ErrUserNotFound)
+	repo.On("GetUserByPrimaryKey", ctx, (*gorm.DB)(nil), "email", "a@mail.test").Return(entity.User{}, errs.ErrUserNotFound)
 	repo.On("CreateNewUser", ctx, (*gorm.DB)(nil), mock.AnythingOfType("entity.User")).Return(expected, nil)
 
 	user, err := us.CreateNewUser(ctx, dto.UserRegisterRequest{
@@ -160,9 +155,9 @@ func TestUserService_UpdateSelfName(t *testing.T) {
 	updated := entity.User{ID: userID, Name: "New"}
 
 	repo.On("GetUserByPrimaryKey", ctx, (*gorm.DB)(nil), "id", userID.String()).Return(old, nil)
-	repo.On("UpdateNameUser", ctx, (*gorm.DB)(nil), "New", old).Return(updated, nil)
+	repo.On("UpdateUser", ctx, (*gorm.DB)(nil), updated).Return(nil)
 
-	edited, err := us.UpdateSelfName(ctx, dto.UserNameUpdateRequest{Name: "New"}, userID.String())
+	edited, err := us.UpdateSelfName(ctx, dto.UserNameUpdateRequest{ID: userID.String(), Name: "New"})
 	require.NoError(t, err)
 	require.Equal(t, "New", edited.Name)
 	repo.AssertExpectations(t)

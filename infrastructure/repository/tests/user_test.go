@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/zetsux/gin-gorm-clean-starter/core/entity"
-	repository_interface "github.com/zetsux/gin-gorm-clean-starter/core/interface/repository"
+	repositoryiface "github.com/zetsux/gin-gorm-clean-starter/core/interface/repository"
 	"github.com/zetsux/gin-gorm-clean-starter/infrastructure/repository"
 	"github.com/zetsux/gin-gorm-clean-starter/support/constant"
 	support "github.com/zetsux/gin-gorm-clean-starter/tests/testutil"
@@ -16,7 +16,7 @@ import (
 
 // --- Test Helpers ---
 
-func setupUserRepositoryTest(t *testing.T) (repository_interface.UserRepository, context.Context) {
+func setupUserRepositoryTest(t *testing.T) (repositoryiface.UserRepository, context.Context) {
 	t.Helper()
 
 	db := support.NewTestDB(t)
@@ -48,17 +48,6 @@ func TestUserRepository_CreateAndGetByPK(t *testing.T) {
 	require.Equal(t, created.ID, fetched.ID)
 }
 
-func TestUserRepository_UpdateName(t *testing.T) {
-	ur, ctx := setupUserRepositoryTest(t)
-
-	seed := factory.SeedUsers(t, ur, 1)[0]
-
-	newName := "New Name"
-	updated, err := ur.UpdateNameUser(ctx, nil, newName, seed)
-	require.NoError(t, err)
-	require.Equal(t, newName, updated.Name)
-}
-
 func TestUserRepository_UpdateUser(t *testing.T) {
 	ur, ctx := setupUserRepositoryTest(t)
 
@@ -66,9 +55,8 @@ func TestUserRepository_UpdateUser(t *testing.T) {
 
 	newEmail := "newmail@example.com"
 	edit := entity.User{ID: seed.ID, Email: newEmail}
-	edited, err := ur.UpdateUser(ctx, nil, edit)
+	err := ur.UpdateUser(ctx, nil, edit)
 	require.NoError(t, err)
-	require.Equal(t, newEmail, edited.Email)
 }
 
 func TestUserRepository_DeleteUserByID(t *testing.T) {

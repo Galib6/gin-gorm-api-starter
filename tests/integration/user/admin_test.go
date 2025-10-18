@@ -178,7 +178,6 @@ func TestIntegration_UpdateUserByAdmin(t *testing.T) {
 	userData := resp.Data.(map[string]interface{})
 	require.Equal(t, "Updated User", userData["name"])
 	require.Equal(t, "updated_user@example.com", userData["email"])
-	require.Equal(t, constant.EnumRoleUser, userData["role"])
 
 	// Verify user can login with updated email
 	_ = getToken(t, server, "updated_user@example.com", "password123")

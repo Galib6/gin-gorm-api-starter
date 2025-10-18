@@ -51,30 +51,15 @@ func (ur *userRepository) GetUserByPrimaryKey(ctx context.Context,
 	return user, nil
 }
 
-func (ur *userRepository) UpdateNameUser(ctx context.Context,
-	tx *gorm.DB, name string, user entity.User) (entity.User, error) {
-	userUpdate := user
-	userUpdate.Name = name
-
-	if tx == nil {
-		tx = ur.db
-	}
-
-	if err := tx.WithContext(ctx).Debug().Save(&userUpdate).Error; err != nil {
-		return userUpdate, err
-	}
-	return userUpdate, nil
-}
-
-func (ur *userRepository) UpdateUser(ctx context.Context, tx *gorm.DB, user entity.User) (entity.User, error) {
+func (ur *userRepository) UpdateUser(ctx context.Context, tx *gorm.DB, user entity.User) error {
 	if tx == nil {
 		tx = ur.db
 	}
 
 	if err := tx.WithContext(ctx).Debug().Updates(&user).Error; err != nil {
-		return entity.User{}, err
+		return err
 	}
-	return user, nil
+	return nil
 }
 
 func (ur *userRepository) DeleteUserByID(ctx context.Context, tx *gorm.DB, id string) error {

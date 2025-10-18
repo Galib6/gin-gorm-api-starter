@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/zetsux/gin-gorm-clean-starter/core/helper/errors"
+	errs "github.com/zetsux/gin-gorm-clean-starter/core/helper/errors"
 	"github.com/zetsux/gin-gorm-clean-starter/support/base"
 	"github.com/zetsux/gin-gorm-clean-starter/tests/testutil"
 )
@@ -46,7 +46,7 @@ func TestIntegration_DeleteUser(t *testing.T) {
 
 	json.Unmarshal(w.Body.Bytes(), &resp)
 	require.False(t, resp.IsSuccess)
-	require.Equal(t, errors.ErrUserNotFound.Error(), resp.Error)
+	require.Equal(t, errs.ErrUserNotFound.Error(), resp.Error)
 }
 
 // Test delete user without authentication

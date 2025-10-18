@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/samber/do"
 	"github.com/zetsux/gin-gorm-clean-starter/api/v1/router"
-	repository_interface "github.com/zetsux/gin-gorm-clean-starter/core/interface/repository"
+	repositoryiface "github.com/zetsux/gin-gorm-clean-starter/core/interface/repository"
 	"github.com/zetsux/gin-gorm-clean-starter/core/service"
 	"github.com/zetsux/gin-gorm-clean-starter/provider"
 	"github.com/zetsux/gin-gorm-clean-starter/support/constant"
@@ -17,8 +17,8 @@ import (
 type TestApp struct {
 	Server      *gin.Engine
 	DB          *gorm.DB
-	TxRepo      repository_interface.TxRepository
-	UserRepo    repository_interface.UserRepository
+	TxRepo      repositoryiface.TxRepository
+	UserRepo    repositoryiface.UserRepository
 	UserService service.UserService
 	JWTService  service.JWTService
 }
@@ -44,8 +44,8 @@ func SetupTestApp(t *testing.T) *TestApp {
 
 	// Invoke
 	testDB := do.MustInvokeNamed[*gorm.DB](injector, constant.DBInjectorKey)
-	txRepo := do.MustInvoke[repository_interface.TxRepository](injector)
-	userRepo := do.MustInvoke[repository_interface.UserRepository](injector)
+	txRepo := do.MustInvoke[repositoryiface.TxRepository](injector)
+	userRepo := do.MustInvoke[repositoryiface.UserRepository](injector)
 	userService := do.MustInvoke[service.UserService](injector)
 	jwtService := do.MustInvoke[service.JWTService](injector)
 

@@ -3,7 +3,7 @@ package provider
 import (
 	"github.com/samber/do"
 	"github.com/zetsux/gin-gorm-clean-starter/config"
-	repository_interface "github.com/zetsux/gin-gorm-clean-starter/core/interface/repository"
+	repositoryiface "github.com/zetsux/gin-gorm-clean-starter/core/interface/repository"
 	"github.com/zetsux/gin-gorm-clean-starter/core/service"
 	"github.com/zetsux/gin-gorm-clean-starter/infrastructure/repository"
 	"github.com/zetsux/gin-gorm-clean-starter/support/constant"
@@ -17,7 +17,7 @@ func SetupDependencies(injector *do.Injector) {
 		})
 	}
 
-	do.Provide(injector, func(i *do.Injector) (repository_interface.TxRepository, error) {
+	do.Provide(injector, func(i *do.Injector) (repositoryiface.TxRepository, error) {
 		db := do.MustInvokeNamed[*gorm.DB](i, constant.DBInjectorKey)
 
 		return repository.NewTxRepository(db), nil

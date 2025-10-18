@@ -135,6 +135,8 @@ func (uc *userController) GetMe(ctx *gin.Context) {
 }
 
 func (uc *userController) UpdateSelfName(ctx *gin.Context) {
+	id := ctx.MustGet("ID").(string)
+
 	var userDTO dto.UserNameUpdateRequest
 	err := ctx.ShouldBind(&userDTO)
 	if err != nil {
@@ -143,8 +145,8 @@ func (uc *userController) UpdateSelfName(ctx *gin.Context) {
 		return
 	}
 
-	id := ctx.MustGet("ID").(string)
-	user, err := uc.userService.UpdateSelfName(ctx, userDTO, id)
+	userDTO.ID = id
+	user, err := uc.userService.UpdateSelfName(ctx, userDTO)
 	if err != nil {
 		_ = ctx.Error(base.NewAppError(http.StatusBadRequest,
 			messages.MsgUserUpdateFailed, err))
@@ -168,7 +170,8 @@ func (uc *userController) UpdateUserByID(ctx *gin.Context) {
 		return
 	}
 
-	user, err := uc.userService.UpdateUserByID(ctx, userDTO, id)
+	userDTO.ID = id
+	user, err := uc.userService.UpdateUserByID(ctx, userDTO)
 	if err != nil {
 		_ = ctx.Error(base.NewAppError(http.StatusBadRequest,
 			messages.MsgUserUpdateFailed, err))

@@ -16,7 +16,7 @@ import (
 	"github.com/zetsux/gin-gorm-clean-starter/api/v1/controller"
 	"github.com/zetsux/gin-gorm-clean-starter/api/v1/router"
 	"github.com/zetsux/gin-gorm-clean-starter/core/helper/dto"
-	"github.com/zetsux/gin-gorm-clean-starter/core/helper/errors"
+	errs "github.com/zetsux/gin-gorm-clean-starter/core/helper/errors"
 	"github.com/zetsux/gin-gorm-clean-starter/core/service"
 	"github.com/zetsux/gin-gorm-clean-starter/support/base"
 	"github.com/zetsux/gin-gorm-clean-starter/support/middleware"
@@ -42,12 +42,12 @@ func (m *userServiceMock) GetUserByPrimaryKey(ctx context.Context, key string, v
 	args := m.Called(ctx, key, value)
 	return args.Get(0).(dto.UserResponse), args.Error(1)
 }
-func (m *userServiceMock) UpdateSelfName(ctx context.Context, ud dto.UserNameUpdateRequest, id string) (dto.UserResponse, error) {
-	args := m.Called(ctx, ud, id)
+func (m *userServiceMock) UpdateSelfName(ctx context.Context, ud dto.UserNameUpdateRequest) (dto.UserResponse, error) {
+	args := m.Called(ctx, ud)
 	return args.Get(0).(dto.UserResponse), args.Error(1)
 }
-func (m *userServiceMock) UpdateUserByID(ctx context.Context, ud dto.UserUpdateRequest, id string) (dto.UserResponse, error) {
-	args := m.Called(ctx, ud, id)
+func (m *userServiceMock) UpdateUserByID(ctx context.Context, ud dto.UserUpdateRequest) (dto.UserResponse, error) {
+	args := m.Called(ctx, ud)
 	return args.Get(0).(dto.UserResponse), args.Error(1)
 }
 func (m *userServiceMock) DeleteUserByID(ctx context.Context, id string) error {
@@ -137,7 +137,7 @@ func TestUserController_Login_Invalid(t *testing.T) {
 	loginReq := dto.UserLoginRequest{Email: "a@mail.test", Password: "wrong"}
 	usm.On("VerifyLogin", mock.Anything, loginReq.Email, loginReq.Password).Return(false)
 	usm.On("GetUserByPrimaryKey", mock.Anything, "email", loginReq.Email).Return(
-		dto.UserResponse{}, errors.ErrUserNotFound,
+		dto.UserResponse{}, errs.ErrUserNotFound,
 	)
 
 	b, _ := json.Marshal(loginReq)

@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	query_interface "github.com/zetsux/gin-gorm-clean-starter/core/interface/query"
-	repository_interface "github.com/zetsux/gin-gorm-clean-starter/core/interface/repository"
+	queryiface "github.com/zetsux/gin-gorm-clean-starter/core/interface/query"
+	repositoryiface "github.com/zetsux/gin-gorm-clean-starter/core/interface/repository"
 	"github.com/zetsux/gin-gorm-clean-starter/infrastructure/query"
 	"github.com/zetsux/gin-gorm-clean-starter/infrastructure/repository"
 	"github.com/zetsux/gin-gorm-clean-starter/support/base"
@@ -16,7 +16,7 @@ import (
 
 // --- Test Helpers ---
 
-func setupUserQueryTest(t *testing.T) (repository_interface.UserRepository, query_interface.UserQuery, context.Context) {
+func setupUserQueryTest(t *testing.T) (repositoryiface.UserRepository, queryiface.UserQuery, context.Context) {
 	t.Helper()
 
 	db := support.NewTestDB(t)

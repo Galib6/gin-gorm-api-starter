@@ -2,11 +2,9 @@ package query
 
 import (
 	"context"
-	"errors"
-	"math"
 
 	"github.com/zetsux/gin-gorm-clean-starter/core/entity"
-	errs "github.com/zetsux/gin-gorm-clean-starter/core/helper/errors"
+	"github.com/zetsux/gin-gorm-clean-starter/core/helper/dto"
 	"github.com/zetsux/gin-gorm-clean-starter/support/base"
 	"gorm.io/gorm"
 )
@@ -19,45 +17,26 @@ func NewUserQuery(db *gorm.DB) *userQuery {
 	return &userQuery{db: db}
 }
 
-func (uq *userQuery) GetAllUsers(ctx context.Context, req base.GetsRequest) ([]entity.User, int64, int64, error) {
-	var err error
-	var users []entity.User
-	var total int64
+func (uq *userQuery) GetAllUsers(ctx context.Context, req dto.UserGetsRequest,
+) ([]entity.User, base.PaginationResponse, error) {
+	stmt := uq.db.WithContext(ctx).Debug().Model(&entity.User{})
 
-	stmt := uq.db.WithContext(ctx).Debug()
+	if req.ID != "" {
+		stmt = stmt.Where("id = ?", req.ID)
+	}
+
+	if req.Role != "" {
+		stmt = stmt.Where("role = ?", req.Role)
+	}
+
 	if req.Search != "" {
-		searchQuery := "%" + req.Search + "%"
-		err = uq.db.WithContext(ctx).Model(&entity.User{}).
-			Where("name ILIKE ? OR email ILIKE ?", searchQuery, searchQuery).
-			Count(&total).Error
-
-		if err != nil {
-			return nil, 0, 0, err
-		}
-		stmt = stmt.Where("name ILIKE ? OR email ILIKE ?", searchQuery, searchQuery)
-	} else {
-		err = uq.db.WithContext(ctx).Model(&entity.User{}).Count(&total).Error
-		if err != nil {
-			return nil, 0, 0, err
-		}
+		search := "%" + req.Search + "%"
+		stmt = stmt.Where("name ILIKE ? OR email ILIKE ?", search, search)
 	}
 
-	if req.Sort != "" {
-		stmt = stmt.Order(req.Sort)
+	users, pageResp, err := base.GetWithPagination[entity.User](stmt, req.PaginationRequest)
+	if err != nil {
+		return nil, pageResp, err
 	}
-
-	lastPage := int64(math.Ceil(float64(total) / float64(req.PerPage)))
-	if req.PerPage == 0 {
-		err = stmt.Find(&users).Error
-	} else {
-		if req.Page <= 0 || int64(req.Page) > lastPage {
-			return nil, 0, 0, errs.ErrInvalidPage
-		}
-		err = stmt.Offset(((req.Page - 1) * req.PerPage)).Limit(req.PerPage).Find(&users).Error
-	}
-
-	if err != nil && !(errors.Is(err, gorm.ErrRecordNotFound)) {
-		return users, 0, 0, err
-	}
-	return users, lastPage, total, nil
+	return users, pageResp, nil
 }

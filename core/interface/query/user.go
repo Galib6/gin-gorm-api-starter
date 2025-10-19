@@ -4,9 +4,10 @@ import (
 	"context"
 
 	"github.com/zetsux/gin-gorm-clean-starter/core/entity"
+	"github.com/zetsux/gin-gorm-clean-starter/core/helper/dto"
 	"github.com/zetsux/gin-gorm-clean-starter/support/base"
 )
 
 type UserQuery interface {
-	GetAllUsers(ctx context.Context, req base.GetsRequest) ([]entity.User, int64, int64, error)
+	GetAllUsers(ctx context.Context, req dto.UserGetsRequest) ([]entity.User, base.PaginationResponse, error)
 }

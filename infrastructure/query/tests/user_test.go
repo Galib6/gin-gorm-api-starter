@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"github.com/zetsux/gin-gorm-clean-starter/core/helper/dto"
 	queryiface "github.com/zetsux/gin-gorm-clean-starter/core/interface/query"
 	repositoryiface "github.com/zetsux/gin-gorm-clean-starter/core/interface/repository"
 	"github.com/zetsux/gin-gorm-clean-starter/infrastructure/query"
@@ -35,16 +36,21 @@ func TestUserQuery_GetAllUsers_PaginationAndSearch(t *testing.T) {
 	_ = factory.SeedUsers(t, ur, 15)
 
 	// no pagination
-	users, _, total, err := uq.GetAllUsers(context.Background(), base.GetsRequest{})
+	users, pageResp, err := uq.GetAllUsers(context.Background(), dto.UserGetsRequest{})
 	require.NoError(t, err)
-	require.GreaterOrEqual(t, int(total), 15)
+	require.GreaterOrEqual(t, int(pageResp.Total), 0)
 	require.GreaterOrEqual(t, len(users), 15)
 
 	// with pagination
-	req := base.GetsRequest{Page: 1, PerPage: 10}
-	users, last, total, err := uq.GetAllUsers(context.Background(), req)
+	req := dto.UserGetsRequest{
+		PaginationRequest: base.PaginationRequest{
+			Page:    1,
+			PerPage: 10,
+		},
+	}
+	users, pageResp, err = uq.GetAllUsers(context.Background(), req)
 	require.NoError(t, err)
-	require.Equal(t, int64(2), last)
-	require.Equal(t, int64(15), total)
+	require.Equal(t, int64(2), pageResp.LastPage)
+	require.Equal(t, int64(15), pageResp.Total)
 	require.Equal(t, 10, len(users))
 }

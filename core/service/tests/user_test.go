@@ -53,9 +53,9 @@ type MockUserQuery struct {
 	mock.Mock
 }
 
-func (m *MockUserQuery) GetAllUsers(ctx context.Context, req base.GetsRequest) ([]entity.User, int64, int64, error) {
+func (m *MockUserQuery) GetAllUsers(ctx context.Context, req dto.UserGetsRequest) ([]entity.User, base.PaginationResponse, error) {
 	args := m.Called(ctx, req)
-	return args.Get(0).([]entity.User), args.Get(1).(int64), args.Get(2).(int64), args.Error(3)
+	return args.Get(0).([]entity.User), args.Get(1).(base.PaginationResponse), args.Error(2)
 }
 
 // --- Mock TxRepository (if needed) ---
@@ -125,9 +125,14 @@ func TestUserService_GetAllUsers(t *testing.T) {
 	us, _, query, ctx := setupUserServiceMock()
 
 	users := []entity.User{{ID: uuid.New(), Name: "A", Email: "a@mail.test"}}
-	query.On("GetAllUsers", ctx, mock.AnythingOfType("base.GetsRequest")).Return(users, int64(1), int64(1), nil)
+	query.On("GetAllUsers", ctx, mock.AnythingOfType("dto.UserGetsRequest")).Return(users, base.PaginationResponse{LastPage: 1, Total: 1}, nil)
 
-	got, page, err := us.GetAllUsers(ctx, base.GetsRequest{Page: 1, PerPage: 10})
+	got, page, err := us.GetAllUsers(ctx, dto.UserGetsRequest{
+		PaginationRequest: base.PaginationRequest{
+			Page:    1,
+			PerPage: 10,
+		},
+	})
 	require.NoError(t, err)
 	require.NotEmpty(t, got)
 	require.Equal(t, int64(1), page.LastPage)

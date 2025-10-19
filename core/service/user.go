@@ -24,7 +24,7 @@ type userService struct {
 type UserService interface {
 	VerifyLogin(ctx context.Context, email string, password string) bool
 	CreateNewUser(ctx context.Context, ud dto.UserRegisterRequest) (dto.UserResponse, error)
-	GetAllUsers(ctx context.Context, req base.GetsRequest) ([]dto.UserResponse, base.PaginationResponse, error)
+	GetAllUsers(ctx context.Context, req dto.UserGetsRequest) ([]dto.UserResponse, base.PaginationResponse, error)
 	GetUserByPrimaryKey(ctx context.Context, key string, value string) (dto.UserResponse, error)
 	UpdateSelfName(ctx context.Context, ud dto.UserNameUpdateRequest) (dto.UserResponse, error)
 	UpdateUserByID(ctx context.Context, ud dto.UserUpdateRequest) (dto.UserResponse, error)
@@ -84,21 +84,9 @@ func (us *userService) CreateNewUser(ctx context.Context, ud dto.UserRegisterReq
 	}, nil
 }
 
-func (us *userService) GetAllUsers(ctx context.Context, req base.GetsRequest) (
+func (us *userService) GetAllUsers(ctx context.Context, req dto.UserGetsRequest) (
 	usersResp []dto.UserResponse, pageResp base.PaginationResponse, err error) {
-	if req.PerPage < 0 {
-		req.PerPage = 0
-	}
-
-	if req.Page < 0 {
-		req.Page = 0
-	}
-
-	if req.Sort != "" && req.Sort[0] == '-' {
-		req.Sort = req.Sort[1:] + " DESC"
-	}
-
-	users, lastPage, total, err := us.userQuery.GetAllUsers(ctx, req)
+	users, pageResp, err := us.userQuery.GetAllUsers(ctx, req)
 	if err != nil {
 		return []dto.UserResponse{}, base.PaginationResponse{}, err
 	}
@@ -115,17 +103,6 @@ func (us *userService) GetAllUsers(ctx context.Context, req base.GetsRequest) (
 		}
 
 		usersResp = append(usersResp, userResp)
-	}
-
-	if req.PerPage == 0 {
-		return usersResp, base.PaginationResponse{}, nil
-	}
-
-	pageResp = base.PaginationResponse{
-		Page:     int64(req.Page),
-		PerPage:  int64(req.PerPage),
-		LastPage: lastPage,
-		Total:    total,
 	}
 	return usersResp, pageResp, nil
 }

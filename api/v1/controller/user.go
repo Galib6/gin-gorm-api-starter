@@ -92,7 +92,7 @@ func (uc *userController) Login(ctx *gin.Context) {
 }
 
 func (uc *userController) GetAllUsers(ctx *gin.Context) {
-	var req base.GetsRequest
+	var req dto.UserGetsRequest
 	if err := ctx.ShouldBind(&req); err != nil {
 		_ = ctx.Error(base.NewAppError(http.StatusBadRequest,
 			messages.MsgUsersFetchFailed, err))

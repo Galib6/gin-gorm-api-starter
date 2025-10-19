@@ -220,7 +220,7 @@ An API starter template for projects based on Controller-Service-Repository (CSR
 
 > Note : GitHooks is not mandatory for this starter. Only do the steps below if you want to apply & use it.
 
-1. Install golangci-lint as the linters aggregator for pre-commit linting by executing `go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest`. Alternatively, you can follow the recommended method, which involves installing the binary from the [official source](https://golangci-lint.run/usage/install/#binaries)
+1. Install golangci-lint as the linters aggregator for pre-commit linting by executing `go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest`. Alternatively, you can follow the recommended method, which involves installing the binary from the [official source](https://github.com/golangci/golangci-lint/releases)
 2. Install commitlint as the conventional commit message checker by executing `go install github.com/conventionalcommit/commitlint@latest`. Alternatively, you can follow the recommended method, which involves installing the binary from the [official source](https://github.com/conventionalcommit/commitlint/releases)
 3. Configure your git's hooks path to be linked to the `.githooks` directory on this repository by executing `git config core.hooksPath .githooks`
 

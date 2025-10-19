@@ -34,7 +34,7 @@ func (m *userServiceMock) CreateNewUser(ctx context.Context, ud dto.UserRegister
 	args := m.Called(ctx, ud)
 	return args.Get(0).(dto.UserResponse), args.Error(1)
 }
-func (m *userServiceMock) GetAllUsers(ctx context.Context, req base.GetsRequest) ([]dto.UserResponse, base.PaginationResponse, error) {
+func (m *userServiceMock) GetAllUsers(ctx context.Context, req dto.UserGetsRequest) ([]dto.UserResponse, base.PaginationResponse, error) {
 	args := m.Called(ctx, req)
 	return args.Get(0).([]dto.UserResponse), args.Get(1).(base.PaginationResponse), args.Error(2)
 }

@@ -2,25 +2,39 @@ package base
 
 import (
 	"math"
+	"strings"
 
 	errs "github.com/zetsux/gin-gorm-clean-starter/core/helper/errors"
+	"golang.org/x/exp/slices"
 	"gorm.io/gorm"
 )
 
-func GetWithPagination[T any](stmt *gorm.DB, req PaginationRequest,
+func applySorting(stmt *gorm.DB, allowedSorts []string, sort string) *gorm.DB {
+	col := sort
+	direction := " ASC"
+
+	if strings.HasPrefix(sort, "-") {
+		col = sort[1:]
+		direction = " DESC"
+	}
+
+	if !slices.Contains(allowedSorts, col) {
+		col = allowedSorts[0]
+		direction = " ASC"
+	}
+
+	stmt = stmt.Order(col + direction)
+	return stmt
+}
+
+func GetWithPagination[T any](stmt *gorm.DB, req PaginationRequest, allowedSorts []string,
 ) (data []T, paginationResp PaginationResponse, err error) {
 	var totalCount int64
 	if err := stmt.Count(&totalCount).Error; err != nil {
 		return nil, paginationResp, err
 	}
 
-	if req.Sort != "" {
-		sortBy := req.Sort
-		if sortBy[0] == '-' {
-			sortBy = sortBy[1:] + " DESC"
-		}
-		stmt = stmt.Order(sortBy)
-	}
+	stmt = applySorting(stmt, allowedSorts, req.Sort)
 
 	if req.PerPage == 0 {
 		err = stmt.Find(&data).Error

@@ -9,6 +9,8 @@ import (
 	"gorm.io/gorm"
 )
 
+var allowedSorts = []string{"id", "name", "email", "created_at", "updated_at"}
+
 type userQuery struct {
 	db *gorm.DB
 }
@@ -34,7 +36,7 @@ func (uq *userQuery) GetAllUsers(ctx context.Context, req dto.UserGetsRequest,
 		stmt = stmt.Where("name ILIKE ? OR email ILIKE ?", search, search)
 	}
 
-	users, pageResp, err := base.GetWithPagination[entity.User](stmt, req.PaginationRequest)
+	users, pageResp, err := base.GetWithPagination[entity.User](stmt, req.PaginationRequest, allowedSorts)
 	if err != nil {
 		return nil, pageResp, err
 	}

@@ -1,8 +1,8 @@
 module github.com/zetsux/gin-gorm-clean-starter
 
-go 1.21
+go 1.24.0
 
-toolchain go1.23.5
+toolchain go1.24.9
 
 require (
 	github.com/fergusstrange/embedded-postgres v1.29.0
@@ -16,11 +16,11 @@ require (
 require (
 	github.com/google/uuid v1.6.0
 	github.com/samber/do v1.6.0
+	golang.org/x/exp v0.0.0-20251017212417-90e834f514db
 )
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/lib/pq v1.10.4 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect

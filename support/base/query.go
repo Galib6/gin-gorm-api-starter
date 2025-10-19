@@ -29,16 +29,16 @@ func applySorting(stmt *gorm.DB, allowedSorts []string, sort string) *gorm.DB {
 
 func GetWithPagination[T any](stmt *gorm.DB, req PaginationRequest, allowedSorts []string,
 ) (data []T, paginationResp PaginationResponse, err error) {
-	var totalCount int64
-	if err := stmt.Count(&totalCount).Error; err != nil {
-		return nil, paginationResp, err
-	}
-
 	stmt = applySorting(stmt, allowedSorts, req.Sort)
 
 	if req.PerPage == 0 {
 		err = stmt.Find(&data).Error
 		return data, paginationResp, err
+	}
+
+	var totalCount int64
+	if err := stmt.Count(&totalCount).Error; err != nil {
+		return nil, paginationResp, err
 	}
 
 	lastPage := int64(math.Ceil(float64(totalCount) / float64(req.PerPage)))

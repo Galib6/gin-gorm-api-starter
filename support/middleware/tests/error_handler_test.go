@@ -53,7 +53,7 @@ func TestErrorHandler_AppError(t *testing.T) {
 
 	require.Equal(t, http.StatusBadRequest, resp.Code)
 	require.Contains(t, resp.Body.String(), `"success":false`)
-	require.Contains(t, resp.Body.String(), `"bad request"`)
+	require.Contains(t, resp.Body.String(), `"Bad request."`)
 	require.Contains(t, resp.Body.String(), `"invalid input"`)
 }
 
@@ -70,6 +70,6 @@ func TestErrorHandler_GenericError(t *testing.T) {
 	router.ServeHTTP(resp, req)
 
 	require.Equal(t, http.StatusInternalServerError, resp.Code)
-	require.Contains(t, resp.Body.String(), `"Internal Server Error"`)
+	require.Contains(t, resp.Body.String(), `"Internal Server Error."`)
 	require.Contains(t, resp.Body.String(), `"something went wrong"`)
 }

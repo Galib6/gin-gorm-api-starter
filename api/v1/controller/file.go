@@ -30,10 +30,8 @@ func (fc *fileController) GetFile(ctx *gin.Context) {
 
 	_, err := os.Stat(filePath)
 	if os.IsNotExist(err) {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, base.CreateFailResponse(
-			messages.MsgFileFetchFailed,
-			err.Error(), http.StatusBadRequest,
-		))
+		_ = ctx.Error(base.NewAppError(http.StatusBadRequest,
+			messages.MsgFileFetchFailed, err))
 		return
 	}
 

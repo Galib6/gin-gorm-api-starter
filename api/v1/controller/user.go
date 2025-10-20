@@ -40,10 +40,9 @@ func NewUserController(userS service.UserService, jwtS service.JWTService) UserC
 
 func (uc *userController) Register(ctx *gin.Context) {
 	var userDTO dto.UserRegisterRequest
-	err := ctx.ShouldBind(&userDTO)
-	if err != nil {
-		_ = ctx.Error(base.NewAppError(http.StatusBadRequest,
-			messages.MsgUserRegisterFailed, err))
+	if err := ctx.ShouldBind(&userDTO); err != nil {
+		msg := base.GetValidationErrorMessage(err, userDTO, messages.MsgUserRegisterFailed)
+		_ = ctx.Error(base.NewAppError(http.StatusBadRequest, msg, err))
 		return
 	}
 
@@ -62,10 +61,9 @@ func (uc *userController) Register(ctx *gin.Context) {
 
 func (uc *userController) Login(ctx *gin.Context) {
 	var userDTO dto.UserLoginRequest
-	err := ctx.ShouldBind(&userDTO)
-	if err != nil {
-		_ = ctx.Error(base.NewAppError(http.StatusBadRequest,
-			messages.MsgUserLoginFailed, err))
+	if err := ctx.ShouldBind(&userDTO); err != nil {
+		msg := base.GetValidationErrorMessage(err, userDTO, messages.MsgUserLoginFailed)
+		_ = ctx.Error(base.NewAppError(http.StatusBadRequest, msg, err))
 		return
 	}
 
@@ -94,8 +92,8 @@ func (uc *userController) Login(ctx *gin.Context) {
 func (uc *userController) GetAllUsers(ctx *gin.Context) {
 	var req dto.UserGetsRequest
 	if err := ctx.ShouldBind(&req); err != nil {
-		_ = ctx.Error(base.NewAppError(http.StatusBadRequest,
-			messages.MsgUsersFetchFailed, err))
+		msg := base.GetValidationErrorMessage(err, req, messages.MsgUsersFetchFailed)
+		_ = ctx.Error(base.NewAppError(http.StatusBadRequest, msg, err))
 		return
 	}
 
@@ -138,10 +136,9 @@ func (uc *userController) UpdateSelfName(ctx *gin.Context) {
 	id := ctx.MustGet("ID").(string)
 
 	var userDTO dto.UserNameUpdateRequest
-	err := ctx.ShouldBind(&userDTO)
-	if err != nil {
-		_ = ctx.Error(base.NewAppError(http.StatusBadRequest,
-			messages.MsgUserUpdateFailed, err))
+	if err := ctx.ShouldBind(&userDTO); err != nil {
+		msg := base.GetValidationErrorMessage(err, userDTO, messages.MsgUserUpdateFailed)
+		_ = ctx.Error(base.NewAppError(http.StatusBadRequest, msg, err))
 		return
 	}
 
@@ -163,10 +160,9 @@ func (uc *userController) UpdateUserByID(ctx *gin.Context) {
 	id := ctx.Param("user_id")
 
 	var userDTO dto.UserUpdateRequest
-	err := ctx.ShouldBind(&userDTO)
-	if err != nil {
-		_ = ctx.Error(base.NewAppError(http.StatusBadRequest,
-			messages.MsgUserUpdateFailed, err))
+	if err := ctx.ShouldBind(&userDTO); err != nil {
+		msg := base.GetValidationErrorMessage(err, userDTO, messages.MsgUserUpdateFailed)
+		_ = ctx.Error(base.NewAppError(http.StatusBadRequest, msg, err))
 		return
 	}
 
@@ -218,10 +214,9 @@ func (uc *userController) ChangePicture(ctx *gin.Context) {
 	id := ctx.MustGet("ID").(string)
 
 	var userDTO dto.UserChangePictureRequest
-	err := ctx.ShouldBind(&userDTO)
-	if err != nil {
-		_ = ctx.Error(base.NewAppError(http.StatusBadRequest,
-			messages.MsgUserPictureUpdateFailed, err))
+	if err := ctx.ShouldBind(&userDTO); err != nil {
+		msg := base.GetValidationErrorMessage(err, userDTO, messages.MsgUserPictureUpdateFailed)
+		_ = ctx.Error(base.NewAppError(http.StatusBadRequest, msg, err))
 		return
 	}
 

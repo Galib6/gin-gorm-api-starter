@@ -23,7 +23,7 @@ type PaginationResponse struct {
 
 func CreateFailResponse(msg string, err string, statusCode uint) Response {
 	return Response{
-		IsSuccess: false, Message: msg, Error: err, Status: statusCode, Data: nil,
+		IsSuccess: false, Message: FinalizeErrorMessage(msg), Error: err, Status: statusCode, Data: nil,
 	}
 }
 

@@ -6,6 +6,7 @@ import (
 
 	"github.com/samber/do"
 	"github.com/zetsux/gin-gorm-api-starter/api/v1/router"
+	"github.com/zetsux/gin-gorm-api-starter/cmd"
 	"github.com/zetsux/gin-gorm-api-starter/config"
 	"github.com/zetsux/gin-gorm-api-starter/provider"
 	"github.com/zetsux/gin-gorm-api-starter/support/constant"
@@ -22,6 +23,9 @@ func main() {
 
 	db := do.MustInvokeNamed[*gorm.DB](injector, constant.DBInjectorKey)
 	defer config.DBClose(db)
+
+	// Handling CLI Commands
+	cmd.Execute(db)
 
 	// Setting Up Server
 	server := gin.Default()

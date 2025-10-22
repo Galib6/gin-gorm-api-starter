@@ -236,8 +236,9 @@ An API starter template for projects based on Controller-Service-Repository (CSR
 ## How to Run?
 
 1. Use the command `make tidy` (or use `go mod tidy` instead, if `make` is unable to be used) to adjust the dependencies accordingly
-2. Use the command `make run` (or use `go run main.go` instead, if `make` is unable to be used) to run the application. You can also use Docker with air to auto-reload by running `make up` (or use `docker-compose up` instead if `make` is unable to be used)
-3. Use the command `make test` (or use `go test ./...` instead, if `make` is unable to be used) to run the automated testing
+2. Use the command `make setup` (or use `go run main.go setup` instead, if `make` is unable to be used) to setup (migrate and seed) your database
+3. Use the command `make run` (or use `go run main.go` instead, if `make` is unable to be used) to run the application. You can also use Docker with air to auto-reload by running `make up` (or use `docker-compose up` instead if `make` is unable to be used)
+4. Use the command `make test` (or use `go test ./...` instead, if `make` is unable to be used) to run the automated testing
 
 ## API Documentation (Postman)
 

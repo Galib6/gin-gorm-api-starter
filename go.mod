@@ -1,4 +1,4 @@
-module github.com/zetsux/gin-gorm-clean-starter
+module github.com/zetsux/gin-gorm-api-starter
 
 go 1.24.0
 

@@ -6,13 +6,13 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
-	"github.com/zetsux/gin-gorm-clean-starter/core/entity"
-	queryiface "github.com/zetsux/gin-gorm-clean-starter/core/interface/query"
-	repositoryiface "github.com/zetsux/gin-gorm-clean-starter/core/interface/repository"
-	"github.com/zetsux/gin-gorm-clean-starter/core/service"
-	"github.com/zetsux/gin-gorm-clean-starter/infrastructure/query"
-	"github.com/zetsux/gin-gorm-clean-starter/infrastructure/repository"
-	"github.com/zetsux/gin-gorm-clean-starter/support/constant"
+	"github.com/zetsux/gin-gorm-api-starter/core/entity"
+	queryiface "github.com/zetsux/gin-gorm-api-starter/core/interface/query"
+	repositoryiface "github.com/zetsux/gin-gorm-api-starter/core/interface/repository"
+	"github.com/zetsux/gin-gorm-api-starter/core/service"
+	"github.com/zetsux/gin-gorm-api-starter/infrastructure/query"
+	"github.com/zetsux/gin-gorm-api-starter/infrastructure/repository"
+	"github.com/zetsux/gin-gorm-api-starter/support/constant"
 
 	"gorm.io/gorm"
 )

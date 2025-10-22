@@ -12,9 +12,9 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	"github.com/zetsux/gin-gorm-clean-starter/core/entity"
-	"github.com/zetsux/gin-gorm-clean-starter/core/helper/dto"
-	errs "github.com/zetsux/gin-gorm-clean-starter/core/helper/errors"
+	"github.com/zetsux/gin-gorm-api-starter/core/entity"
+	"github.com/zetsux/gin-gorm-api-starter/core/helper/dto"
+	errs "github.com/zetsux/gin-gorm-api-starter/core/helper/errors"
 	"gorm.io/gorm"
 )
 

@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	embeddedpostgres "github.com/fergusstrange/embedded-postgres"
-	"github.com/zetsux/gin-gorm-clean-starter/core/entity"
+	"github.com/zetsux/gin-gorm-api-starter/core/entity"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )

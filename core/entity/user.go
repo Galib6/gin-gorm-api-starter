@@ -2,8 +2,8 @@ package entity
 
 import (
 	"github.com/google/uuid"
-	"github.com/zetsux/gin-gorm-clean-starter/support/base"
-	"github.com/zetsux/gin-gorm-clean-starter/support/util"
+	"github.com/zetsux/gin-gorm-api-starter/support/base"
+	"github.com/zetsux/gin-gorm-api-starter/support/util"
 
 	"gorm.io/gorm"
 )

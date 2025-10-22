@@ -2,11 +2,11 @@ package provider
 
 import (
 	"github.com/samber/do"
-	"github.com/zetsux/gin-gorm-clean-starter/config"
-	repositoryiface "github.com/zetsux/gin-gorm-clean-starter/core/interface/repository"
-	"github.com/zetsux/gin-gorm-clean-starter/core/service"
-	"github.com/zetsux/gin-gorm-clean-starter/infrastructure/repository"
-	"github.com/zetsux/gin-gorm-clean-starter/support/constant"
+	"github.com/zetsux/gin-gorm-api-starter/config"
+	repositoryiface "github.com/zetsux/gin-gorm-api-starter/core/interface/repository"
+	"github.com/zetsux/gin-gorm-api-starter/core/service"
+	"github.com/zetsux/gin-gorm-api-starter/infrastructure/repository"
+	"github.com/zetsux/gin-gorm-api-starter/support/constant"
 	"gorm.io/gorm"
 )
 

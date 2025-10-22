@@ -3,8 +3,8 @@ package database
 import (
 	"fmt"
 
-	"github.com/zetsux/gin-gorm-clean-starter/core/entity"
-	"github.com/zetsux/gin-gorm-clean-starter/database/seeder"
+	"github.com/zetsux/gin-gorm-api-starter/core/entity"
+	"github.com/zetsux/gin-gorm-api-starter/database/seeder"
 	"gorm.io/gorm"
 )
 

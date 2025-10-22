@@ -7,8 +7,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/require"
-	"github.com/zetsux/gin-gorm-clean-starter/core/service"
-	"github.com/zetsux/gin-gorm-clean-starter/support/middleware"
+	"github.com/zetsux/gin-gorm-api-starter/core/service"
+	"github.com/zetsux/gin-gorm-api-starter/support/middleware"
 )
 
 // --- Test Helpers ---

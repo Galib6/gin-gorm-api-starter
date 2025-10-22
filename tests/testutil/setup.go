@@ -5,12 +5,12 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/samber/do"
-	"github.com/zetsux/gin-gorm-clean-starter/api/v1/router"
-	repositoryiface "github.com/zetsux/gin-gorm-clean-starter/core/interface/repository"
-	"github.com/zetsux/gin-gorm-clean-starter/core/service"
-	"github.com/zetsux/gin-gorm-clean-starter/provider"
-	"github.com/zetsux/gin-gorm-clean-starter/support/constant"
-	"github.com/zetsux/gin-gorm-clean-starter/support/middleware"
+	"github.com/zetsux/gin-gorm-api-starter/api/v1/router"
+	repositoryiface "github.com/zetsux/gin-gorm-api-starter/core/interface/repository"
+	"github.com/zetsux/gin-gorm-api-starter/core/service"
+	"github.com/zetsux/gin-gorm-api-starter/provider"
+	"github.com/zetsux/gin-gorm-api-starter/support/constant"
+	"github.com/zetsux/gin-gorm-api-starter/support/middleware"
 	"gorm.io/gorm"
 )
 

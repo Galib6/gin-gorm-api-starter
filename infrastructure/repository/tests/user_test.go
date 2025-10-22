@@ -6,12 +6,12 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
-	"github.com/zetsux/gin-gorm-clean-starter/core/entity"
-	repositoryiface "github.com/zetsux/gin-gorm-clean-starter/core/interface/repository"
-	"github.com/zetsux/gin-gorm-clean-starter/infrastructure/repository"
-	"github.com/zetsux/gin-gorm-clean-starter/support/constant"
-	support "github.com/zetsux/gin-gorm-clean-starter/tests/testutil"
-	"github.com/zetsux/gin-gorm-clean-starter/tests/testutil/factory"
+	"github.com/zetsux/gin-gorm-api-starter/core/entity"
+	repositoryiface "github.com/zetsux/gin-gorm-api-starter/core/interface/repository"
+	"github.com/zetsux/gin-gorm-api-starter/infrastructure/repository"
+	"github.com/zetsux/gin-gorm-api-starter/support/constant"
+	support "github.com/zetsux/gin-gorm-api-starter/tests/testutil"
+	"github.com/zetsux/gin-gorm-api-starter/tests/testutil/factory"
 )
 
 // --- Test Helpers ---

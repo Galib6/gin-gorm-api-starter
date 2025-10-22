@@ -7,9 +7,9 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	errs "github.com/zetsux/gin-gorm-clean-starter/core/helper/errors"
-	"github.com/zetsux/gin-gorm-clean-starter/support/base"
-	"github.com/zetsux/gin-gorm-clean-starter/tests/testutil"
+	errs "github.com/zetsux/gin-gorm-api-starter/core/helper/errors"
+	"github.com/zetsux/gin-gorm-api-starter/support/base"
+	"github.com/zetsux/gin-gorm-api-starter/tests/testutil"
 )
 
 // Test delete user endpoint

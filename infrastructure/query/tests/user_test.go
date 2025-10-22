@@ -5,14 +5,14 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/zetsux/gin-gorm-clean-starter/core/helper/dto"
-	queryiface "github.com/zetsux/gin-gorm-clean-starter/core/interface/query"
-	repositoryiface "github.com/zetsux/gin-gorm-clean-starter/core/interface/repository"
-	"github.com/zetsux/gin-gorm-clean-starter/infrastructure/query"
-	"github.com/zetsux/gin-gorm-clean-starter/infrastructure/repository"
-	"github.com/zetsux/gin-gorm-clean-starter/support/base"
-	support "github.com/zetsux/gin-gorm-clean-starter/tests/testutil"
-	"github.com/zetsux/gin-gorm-clean-starter/tests/testutil/factory"
+	"github.com/zetsux/gin-gorm-api-starter/core/helper/dto"
+	queryiface "github.com/zetsux/gin-gorm-api-starter/core/interface/query"
+	repositoryiface "github.com/zetsux/gin-gorm-api-starter/core/interface/repository"
+	"github.com/zetsux/gin-gorm-api-starter/infrastructure/query"
+	"github.com/zetsux/gin-gorm-api-starter/infrastructure/repository"
+	"github.com/zetsux/gin-gorm-api-starter/support/base"
+	support "github.com/zetsux/gin-gorm-api-starter/tests/testutil"
+	"github.com/zetsux/gin-gorm-api-starter/tests/testutil/factory"
 )
 
 // --- Test Helpers ---

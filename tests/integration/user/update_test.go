@@ -8,9 +8,9 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/zetsux/gin-gorm-clean-starter/core/helper/dto"
-	"github.com/zetsux/gin-gorm-clean-starter/support/base"
-	"github.com/zetsux/gin-gorm-clean-starter/tests/testutil"
+	"github.com/zetsux/gin-gorm-api-starter/core/helper/dto"
+	"github.com/zetsux/gin-gorm-api-starter/support/base"
+	"github.com/zetsux/gin-gorm-api-starter/tests/testutil"
 )
 
 // Test update user name endpoint

@@ -3,7 +3,7 @@ package repositoryiface
 import (
 	"context"
 
-	"github.com/zetsux/gin-gorm-clean-starter/core/entity"
+	"github.com/zetsux/gin-gorm-api-starter/core/entity"
 	"gorm.io/gorm"
 )
 

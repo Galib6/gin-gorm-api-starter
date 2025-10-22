@@ -4,7 +4,7 @@ import (
 	"math"
 	"strings"
 
-	errs "github.com/zetsux/gin-gorm-clean-starter/core/helper/errors"
+	errs "github.com/zetsux/gin-gorm-api-starter/core/helper/errors"
 	"golang.org/x/exp/slices"
 	"gorm.io/gorm"
 )

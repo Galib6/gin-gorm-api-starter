@@ -8,11 +8,11 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/zetsux/gin-gorm-clean-starter/core/helper/dto"
-	"github.com/zetsux/gin-gorm-clean-starter/support/base"
-	"github.com/zetsux/gin-gorm-clean-starter/support/constant"
-	"github.com/zetsux/gin-gorm-clean-starter/tests/testutil"
-	"github.com/zetsux/gin-gorm-clean-starter/tests/testutil/factory"
+	"github.com/zetsux/gin-gorm-api-starter/core/helper/dto"
+	"github.com/zetsux/gin-gorm-api-starter/support/base"
+	"github.com/zetsux/gin-gorm-api-starter/support/constant"
+	"github.com/zetsux/gin-gorm-api-starter/tests/testutil"
+	"github.com/zetsux/gin-gorm-api-starter/tests/testutil/factory"
 )
 
 // Test get users by admin endpoint

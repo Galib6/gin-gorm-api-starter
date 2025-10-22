@@ -13,13 +13,13 @@ import (
 	"github.com/samber/do"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	"github.com/zetsux/gin-gorm-clean-starter/api/v1/controller"
-	"github.com/zetsux/gin-gorm-clean-starter/api/v1/router"
-	"github.com/zetsux/gin-gorm-clean-starter/core/helper/dto"
-	errs "github.com/zetsux/gin-gorm-clean-starter/core/helper/errors"
-	"github.com/zetsux/gin-gorm-clean-starter/core/service"
-	"github.com/zetsux/gin-gorm-clean-starter/support/base"
-	"github.com/zetsux/gin-gorm-clean-starter/support/middleware"
+	"github.com/zetsux/gin-gorm-api-starter/api/v1/controller"
+	"github.com/zetsux/gin-gorm-api-starter/api/v1/router"
+	"github.com/zetsux/gin-gorm-api-starter/core/helper/dto"
+	errs "github.com/zetsux/gin-gorm-api-starter/core/helper/errors"
+	"github.com/zetsux/gin-gorm-api-starter/core/service"
+	"github.com/zetsux/gin-gorm-api-starter/support/base"
+	"github.com/zetsux/gin-gorm-api-starter/support/middleware"
 )
 
 // --- Mock Services ---

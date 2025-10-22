@@ -5,11 +5,11 @@ import (
 	"os"
 
 	"github.com/samber/do"
-	"github.com/zetsux/gin-gorm-clean-starter/api/v1/router"
-	"github.com/zetsux/gin-gorm-clean-starter/config"
-	"github.com/zetsux/gin-gorm-clean-starter/provider"
-	"github.com/zetsux/gin-gorm-clean-starter/support/constant"
-	"github.com/zetsux/gin-gorm-clean-starter/support/middleware"
+	"github.com/zetsux/gin-gorm-api-starter/api/v1/router"
+	"github.com/zetsux/gin-gorm-api-starter/config"
+	"github.com/zetsux/gin-gorm-api-starter/provider"
+	"github.com/zetsux/gin-gorm-api-starter/support/constant"
+	"github.com/zetsux/gin-gorm-api-starter/support/middleware"
 	"gorm.io/gorm"
 
 	"github.com/gin-gonic/gin"

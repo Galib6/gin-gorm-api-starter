@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/zetsux/gin-gorm-clean-starter/support/constant"
+	"github.com/zetsux/gin-gorm-api-starter/support/constant"
 )
 
 type JWTService interface {

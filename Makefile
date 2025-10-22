@@ -23,6 +23,15 @@ test-integration:
 test-unit:
 	go test ./core/... ./support/... ./api/... -v
 
+setup:
+	go run main.go setup
+
+migrate:
+	go run main.go migrate
+
+seed:
+	go run main.go seed
+
 # =========================
 # Docker commands
 # =========================

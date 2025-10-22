@@ -19,19 +19,14 @@ func DBMigrate(db *gorm.DB) {
 	)
 
 	if err != nil {
-		fmt.Println(err)
-		panic(err)
-	}
-
-	if err := DBSeed(db); err != nil {
+		fmt.Println("Failed to migrate database: ", err)
 		panic(err)
 	}
 }
 
-func DBSeed(db *gorm.DB) error {
+func DBSeed(db *gorm.DB) {
 	if err := seeder.UserSeeder(db); err != nil {
-		return err
+		fmt.Println("Failed to seed users: ", err)
+		panic(err)
 	}
-
-	return nil
 }

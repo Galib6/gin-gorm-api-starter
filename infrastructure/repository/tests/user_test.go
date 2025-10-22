@@ -28,7 +28,7 @@ func setupUserRepositoryTest(t *testing.T) (repositoryiface.UserRepository, cont
 
 // --- Tests ---
 
-func TestUserRepository_CreateAndGetByPK(t *testing.T) {
+func TestUserRepository_CreateUser(t *testing.T) {
 	ur, ctx := setupUserRepositoryTest(t)
 
 	user := entity.User{
@@ -41,11 +41,23 @@ func TestUserRepository_CreateAndGetByPK(t *testing.T) {
 
 	created, err := ur.CreateNewUser(ctx, nil, user)
 	require.NoError(t, err)
+	require.Equal(t, user.ID, created.ID)
 	require.Equal(t, user.Email, created.Email)
+	require.Equal(t, user.Name, created.Name)
+	require.Equal(t, user.Role, created.Role)
+}
 
-	fetched, err := ur.GetUserByPrimaryKey(ctx, nil, constant.DBAttrEmail, user.Email)
+func TestUserRepository_GetUserByPrimaryKey(t *testing.T) {
+	ur, ctx := setupUserRepositoryTest(t)
+
+	seed := factory.SeedUser(t, ur, "New User", "newuser@mail.com", "passwordnew", constant.EnumRoleUser)
+
+	fetched, err := ur.GetUserByPrimaryKey(ctx, nil, constant.DBAttrEmail, seed.Email)
 	require.NoError(t, err)
-	require.Equal(t, created.ID, fetched.ID)
+	require.Equal(t, seed.ID, fetched.ID)
+	require.Equal(t, seed.Email, fetched.Email)
+	require.Equal(t, seed.Name, fetched.Name)
+	require.Equal(t, seed.Role, fetched.Role)
 }
 
 func TestUserRepository_UpdateUser(t *testing.T) {
@@ -57,6 +69,10 @@ func TestUserRepository_UpdateUser(t *testing.T) {
 	edit := entity.User{ID: seed.ID, Email: newEmail}
 	err := ur.UpdateUser(ctx, nil, edit)
 	require.NoError(t, err)
+
+	updated, err := ur.GetUserByPrimaryKey(ctx, nil, constant.DBAttrID, seed.ID.String())
+	require.NoError(t, err)
+	require.Equal(t, newEmail, updated.Email)
 }
 
 func TestUserRepository_DeleteUserByID(t *testing.T) {
@@ -66,4 +82,7 @@ func TestUserRepository_DeleteUserByID(t *testing.T) {
 
 	err := ur.DeleteUserByID(ctx, nil, seed.ID.String())
 	require.NoError(t, err)
+
+	_, err = ur.GetUserByPrimaryKey(ctx, nil, constant.DBAttrID, seed.ID.String())
+	require.Error(t, err)
 }

@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	migration "github.com/zetsux/gin-gorm-api-starter/database"
-
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -40,7 +38,6 @@ func DBSetup() *gorm.DB {
 		panic(err)
 	}
 
-	migration.DBMigrate(db)
 	return db
 }
 

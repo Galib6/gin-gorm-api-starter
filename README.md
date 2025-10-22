@@ -34,6 +34,11 @@ An API starter template for projects based on Controller-Service-Repository (CSR
 │           ├── user.go
 │           └── etc
 │
+├── /cmd
+│   ├── db.go
+│   ├── exec.go
+│   └── etc
+│
 ├── /config
 │   ├── db.go
 │   └── etc
@@ -119,6 +124,8 @@ An API starter template for projects based on Controller-Service-Repository (CSR
   - `/controller` : The directory for things related to the Controller layer, which handles requests and returns responses.
   - `/router` : The directory for things related to routing. Contains all supported routes/endpoints along with request methods and used middleware.
 
+- `/cmd` : The directory to store executable commands like for database migration or seeder runs.
+
 - `/config` : The directory for things related to program configuration like database configuration.
 
 - `/core` : The directory for things related to the core backend logic. Contains business logic, entities, and database interaction.
@@ -167,6 +174,8 @@ An API starter template for projects based on Controller-Service-Repository (CSR
 
   - `/controller` : Direktori untuk menyimpan hal-hal terkait Controller, yang bertugas menerima request dan memberikan response.
   - `/router` : Direktori untuk menyimpan hal-hal yang terkait dengan routing, berisi semua route/endpoints yang didukung beserta metode request dan middleware yang digunakan.
+
+- `/cmd` : Direktori untuk menyimpan perintah-perintah yang dapat dijalankan seperti migrasi atau _seeding_ pada database.
 
 - `/config` : Direktori yang berisi hal-hal terkait konfigurasi aplikasi, misalnya konfigurasi database.
 

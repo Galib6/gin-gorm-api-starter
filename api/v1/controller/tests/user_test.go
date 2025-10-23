@@ -4,8 +4,11 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"io"
+	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -178,4 +181,140 @@ func TestUserController_GetMe_Unauthenticated(t *testing.T) {
 
 	r.ServeHTTP(w, req)
 	require.Equal(t, http.StatusUnauthorized, w.Code)
+}
+
+func TestUserController_GetAllUsers(t *testing.T) {
+	r, usm, jwtm := setupUserControllerTest()
+
+	getsReq := dto.UserGetsRequest{Search: "a", PaginationRequest: base.PaginationRequest{Page: 1, PerPage: 10}}
+	jwtm.On("ValidateToken", "token").Return(&jwt.Token{Valid: true}, nil)
+	jwtm.On("GetAttrByToken", "token").Return(uuid.NewString(), constant.EnumRoleAdmin, nil)
+	usm.On("GetAllUsers", mock.Anything, getsReq).Return(
+		[]dto.UserResponse{
+			{ID: uuid.NewString(), Email: "a@mail.test", Name: "A", Role: constant.EnumRoleUser},
+		}, base.PaginationResponse{Page: 1, PerPage: 10, Total: 1}, nil,
+	)
+
+	req := httptest.NewRequest(http.MethodGet, "/api/v1/users?search=a&page=1&per_page=10", nil)
+	req.Header.Set("Authorization", "Bearer token")
+	w := httptest.NewRecorder()
+
+	r.ServeHTTP(w, req)
+	require.Equal(t, http.StatusOK, w.Code)
+}
+
+func TestUserController_UpdateSelfName(t *testing.T) {
+	r, usm, jwtm := setupUserControllerTest()
+
+	uuidStr := uuid.NewString()
+	jwtm.On("ValidateToken", "token").Return(&jwt.Token{Valid: true}, nil)
+	jwtm.On("GetAttrByToken", "token").Return(uuidStr, constant.EnumRoleUser, nil)
+
+	updateReq := dto.UserNameUpdateRequest{ID: uuidStr, Name: "Updated Name"}
+	usm.On("UpdateSelfName", mock.Anything, updateReq).Return(
+		dto.UserResponse{ID: uuidStr, Email: "a@mail.test", Name: "Updated Name", Role: constant.EnumRoleUser}, nil,
+	)
+
+	b, _ := json.Marshal(updateReq)
+	req := httptest.NewRequest(http.MethodPatch, "/api/v1/users/me/name", bytes.NewReader(b))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer token")
+	w := httptest.NewRecorder()
+
+	r.ServeHTTP(w, req)
+	require.Equal(t, http.StatusOK, w.Code)
+}
+
+func TestUserController_UpdateUserByID(t *testing.T) {
+	r, usm, jwtm := setupUserControllerTest()
+
+	targetUserID := uuid.NewString()
+	jwtm.On("ValidateToken", "token").Return(&jwt.Token{Valid: true}, nil)
+	jwtm.On("GetAttrByToken", "token").Return(uuid.NewString(), constant.EnumRoleAdmin, nil)
+
+	updateReq := dto.UserUpdateRequest{ID: targetUserID, Name: "Updated Name", Role: constant.EnumRoleUser}
+	usm.On("UpdateUserByID", mock.Anything, updateReq).Return(
+		dto.UserResponse{ID: targetUserID, Email: "a@mail.test", Name: "Updated Name", Role: constant.EnumRoleUser}, nil,
+	)
+
+	b, _ := json.Marshal(updateReq)
+	req := httptest.NewRequest(http.MethodPatch, "/api/v1/users/"+targetUserID, bytes.NewReader(b))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer token")
+	w := httptest.NewRecorder()
+
+	r.ServeHTTP(w, req)
+	require.Equal(t, http.StatusOK, w.Code)
+}
+
+func TestUserController_Delete(t *testing.T) {
+	r, usm, jwtm := setupUserControllerTest()
+
+	targetUserID := uuid.NewString()
+
+	jwtm.On("ValidateToken", "token").Return(&jwt.Token{Valid: true}, nil)
+	jwtm.On("GetAttrByToken", "token").Return(uuid.NewString(), constant.EnumRoleAdmin, nil)
+	usm.On("DeleteUserByID", mock.Anything, targetUserID).Return(nil)
+
+	req := httptest.NewRequest(http.MethodDelete, "/api/v1/users/"+targetUserID, nil)
+	req.Header.Set("Authorization", "Bearer token")
+	w := httptest.NewRecorder()
+
+	r.ServeHTTP(w, req)
+	require.Equal(t, http.StatusOK, w.Code)
+}
+
+func TestUserController_ChangePicture(t *testing.T) {
+	r, usm, jwtm := setupUserControllerTest()
+
+	uuidStr := uuid.NewString()
+	jwtm.On("ValidateToken", "token").Return(&jwt.Token{Valid: true}, nil)
+	jwtm.On("GetAttrByToken", "token").Return(uuidStr, constant.EnumRoleUser, nil)
+
+	// Create a multipart form file
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+	fileWriter, err := writer.CreateFormFile("picture", "profile.png")
+	require.NoError(t, err)
+
+	_, err = io.Copy(fileWriter, strings.NewReader("fake image bytes"))
+	require.NoError(t, err)
+	require.NoError(t, writer.Close())
+
+	req := httptest.NewRequest(http.MethodPatch, "/api/v1/users/picture", body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.Header.Set("Authorization", "Bearer token")
+	w := httptest.NewRecorder()
+
+	err = req.ParseMultipartForm(10 << 20)
+	require.NoError(t, err)
+	fileHeader := req.MultipartForm.File["picture"][0]
+
+	changePicReq := dto.UserChangePictureRequest{Picture: fileHeader}
+	usm.On("ChangePicture", mock.Anything, changePicReq, uuidStr).Return(
+		dto.UserResponse{ID: uuidStr}, nil,
+	)
+
+	usm.On("ChangePicture", mock.Anything, changePicReq, uuidStr).
+		Return(dto.UserResponse{ID: uuidStr, Name: "Updated"}, nil)
+
+	r.ServeHTTP(w, req)
+	require.Equal(t, http.StatusOK, w.Code)
+}
+
+func TestUserController_DeletePicture(t *testing.T) {
+	r, usm, jwtm := setupUserControllerTest()
+
+	uuidStr := uuid.NewString()
+	jwtm.On("ValidateToken", "token").Return(&jwt.Token{Valid: true}, nil)
+	jwtm.On("GetAttrByToken", "token").Return(uuidStr, constant.EnumRoleUser, nil)
+
+	usm.On("DeletePicture", mock.Anything, uuidStr).Return(nil)
+
+	req := httptest.NewRequest(http.MethodDelete, "/api/v1/users/picture/"+uuidStr, nil)
+	req.Header.Set("Authorization", "Bearer token")
+	w := httptest.NewRecorder()
+
+	r.ServeHTTP(w, req)
+	require.Equal(t, http.StatusOK, w.Code)
 }

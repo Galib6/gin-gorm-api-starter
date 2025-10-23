@@ -33,13 +33,12 @@ func UserSeeder(db *gorm.DB) error {
 
 	for _, data := range dummyUsers {
 		var user entity.User
-		err := db.Where(&entity.User{Email: data.Email}).First(&user).Error
-		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-			return err
-		}
+		err := db.Unscoped().Where(&entity.User{Email: data.Email}).First(&user).Error
+		if err != nil {
+			if !errors.Is(err, gorm.ErrRecordNotFound) {
+				return err
+			}
 
-		isData := db.Unscoped().Find(&user, "email = ?", data.Email).RowsAffected
-		if isData == 0 {
 			if err := db.Create(&data).Error; err != nil {
 				return err
 			}

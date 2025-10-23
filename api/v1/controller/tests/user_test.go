@@ -159,7 +159,6 @@ func TestUserController_GetMe(t *testing.T) {
 	r, usm, jwtm := setupUserControllerTest()
 
 	uuidStr := uuid.NewString()
-	jwtm.On("ValidateToken", "token").Return(&jwt.Token{Valid: true}, nil)
 	jwtm.On("GetAttrByToken", "token").Return(uuidStr, constant.EnumRoleUser, nil)
 	usm.On("GetUserByPrimaryKey", mock.Anything, mock.Anything, mock.Anything).Return(
 		dto.UserResponse{ID: uuidStr, Email: "a@mail.test", Name: "A", Role: constant.EnumRoleUser}, nil,
@@ -187,7 +186,6 @@ func TestUserController_GetAllUsers(t *testing.T) {
 	r, usm, jwtm := setupUserControllerTest()
 
 	getsReq := dto.UserGetsRequest{Search: "a", PaginationRequest: base.PaginationRequest{Page: 1, PerPage: 10}}
-	jwtm.On("ValidateToken", "token").Return(&jwt.Token{Valid: true}, nil)
 	jwtm.On("GetAttrByToken", "token").Return(uuid.NewString(), constant.EnumRoleAdmin, nil)
 	usm.On("GetAllUsers", mock.Anything, getsReq).Return(
 		[]dto.UserResponse{
@@ -207,7 +205,6 @@ func TestUserController_UpdateSelfName(t *testing.T) {
 	r, usm, jwtm := setupUserControllerTest()
 
 	uuidStr := uuid.NewString()
-	jwtm.On("ValidateToken", "token").Return(&jwt.Token{Valid: true}, nil)
 	jwtm.On("GetAttrByToken", "token").Return(uuidStr, constant.EnumRoleUser, nil)
 
 	updateReq := dto.UserNameUpdateRequest{ID: uuidStr, Name: "Updated Name"}
@@ -229,7 +226,6 @@ func TestUserController_UpdateUserByID(t *testing.T) {
 	r, usm, jwtm := setupUserControllerTest()
 
 	targetUserID := uuid.NewString()
-	jwtm.On("ValidateToken", "token").Return(&jwt.Token{Valid: true}, nil)
 	jwtm.On("GetAttrByToken", "token").Return(uuid.NewString(), constant.EnumRoleAdmin, nil)
 
 	updateReq := dto.UserUpdateRequest{ID: targetUserID, Name: "Updated Name", Role: constant.EnumRoleUser}
@@ -251,8 +247,6 @@ func TestUserController_Delete(t *testing.T) {
 	r, usm, jwtm := setupUserControllerTest()
 
 	targetUserID := uuid.NewString()
-
-	jwtm.On("ValidateToken", "token").Return(&jwt.Token{Valid: true}, nil)
 	jwtm.On("GetAttrByToken", "token").Return(uuid.NewString(), constant.EnumRoleAdmin, nil)
 	usm.On("DeleteUserByID", mock.Anything, targetUserID).Return(nil)
 
@@ -268,7 +262,6 @@ func TestUserController_ChangePicture(t *testing.T) {
 	r, usm, jwtm := setupUserControllerTest()
 
 	uuidStr := uuid.NewString()
-	jwtm.On("ValidateToken", "token").Return(&jwt.Token{Valid: true}, nil)
 	jwtm.On("GetAttrByToken", "token").Return(uuidStr, constant.EnumRoleUser, nil)
 
 	// Create a multipart form file
@@ -306,7 +299,6 @@ func TestUserController_DeletePicture(t *testing.T) {
 	r, usm, jwtm := setupUserControllerTest()
 
 	uuidStr := uuid.NewString()
-	jwtm.On("ValidateToken", "token").Return(&jwt.Token{Valid: true}, nil)
 	jwtm.On("GetAttrByToken", "token").Return(uuidStr, constant.EnumRoleUser, nil)
 
 	usm.On("DeletePicture", mock.Anything, uuidStr).Return(nil)

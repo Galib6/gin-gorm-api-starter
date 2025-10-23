@@ -15,19 +15,19 @@ func NewTxRepository(db *gorm.DB) *txRepository {
 	return &txRepository{db: db}
 }
 
-func (txr txRepository) DB() *gorm.DB {
-	return txr.db
+func (rp txRepository) DB() *gorm.DB {
+	return rp.db
 }
 
-func (txr txRepository) BeginTx(ctx context.Context) (*gorm.DB, error) {
-	tx := txr.db.WithContext(ctx).Begin()
+func (rp txRepository) BeginTx(ctx context.Context) (*gorm.DB, error) {
+	tx := rp.db.WithContext(ctx).Begin()
 	if tx.Error != nil {
 		return nil, tx.Error
 	}
 	return tx, nil
 }
 
-func (txr txRepository) CommitOrRollbackTx(ctx context.Context, tx *gorm.DB, err error) {
+func (rp txRepository) CommitOrRollbackTx(ctx context.Context, tx *gorm.DB, err error) {
 	if err != nil {
 		log.Println("Error occurred: ", err)
 		tx.WithContext(ctx).Debug().Rollback()

@@ -10,6 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 	"github.com/samber/do"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -19,6 +20,7 @@ import (
 	errs "github.com/zetsux/gin-gorm-api-starter/core/helper/errors"
 	"github.com/zetsux/gin-gorm-api-starter/core/service"
 	"github.com/zetsux/gin-gorm-api-starter/support/base"
+	"github.com/zetsux/gin-gorm-api-starter/support/constant"
 	"github.com/zetsux/gin-gorm-api-starter/support/middleware"
 )
 
@@ -70,7 +72,8 @@ func (j *jwtServiceMock) ValidateToken(token string) (*jwt.Token, error) {
 	return &jwt.Token{Valid: true}, nil
 }
 func (j *jwtServiceMock) GetAttrByToken(token string) (string, string, error) {
-	return "id", "user", nil
+	args := j.Called(token)
+	return args.String(0), args.String(1), args.Error(2)
 }
 
 // --- Test Helpers ---
@@ -102,7 +105,7 @@ func TestUserController_Register(t *testing.T) {
 	r, usm, _ := setupUserControllerTest()
 
 	regReq := dto.UserRegisterRequest{Name: "A", Email: "a@mail.test", Password: "secret"}
-	usm.On("CreateNewUser", mock.Anything, regReq).Return(dto.UserResponse{ID: "1", Email: regReq.Email, Name: regReq.Name}, nil)
+	usm.On("CreateNewUser", mock.Anything, regReq).Return(dto.UserResponse{ID: uuid.NewString(), Email: regReq.Email, Name: regReq.Name}, nil)
 
 	b, _ := json.Marshal(regReq)
 	req := httptest.NewRequest(http.MethodPost, "/api/v1/users", bytes.NewReader(b))
@@ -119,7 +122,7 @@ func TestUserController_Login(t *testing.T) {
 	loginReq := dto.UserLoginRequest{Email: "a@mail.test", Password: "secret"}
 	usm.On("VerifyLogin", mock.Anything, loginReq.Email, loginReq.Password).Return(true)
 	usm.On("GetUserByPrimaryKey", mock.Anything, "email", loginReq.Email).Return(
-		dto.UserResponse{ID: "1", Email: loginReq.Email, Name: "A", Role: "user"}, nil,
+		dto.UserResponse{ID: uuid.NewString(), Email: loginReq.Email, Name: "A", Role: constant.EnumRoleUser}, nil,
 	)
 
 	b, _ := json.Marshal(loginReq)
@@ -152,9 +155,11 @@ func TestUserController_Login_Invalid(t *testing.T) {
 func TestUserController_GetMe(t *testing.T) {
 	r, usm, jwtm := setupUserControllerTest()
 
+	uuidStr := uuid.NewString()
 	jwtm.On("ValidateToken", "token").Return(&jwt.Token{Valid: true}, nil)
+	jwtm.On("GetAttrByToken", "token").Return(uuidStr, constant.EnumRoleUser, nil)
 	usm.On("GetUserByPrimaryKey", mock.Anything, mock.Anything, mock.Anything).Return(
-		dto.UserResponse{ID: "1", Email: "a@mail.test", Name: "A", Role: "user"}, nil,
+		dto.UserResponse{ID: uuidStr, Email: "a@mail.test", Name: "A", Role: constant.EnumRoleUser}, nil,
 	)
 
 	req := httptest.NewRequest(http.MethodGet, "/api/v1/users/me", nil)

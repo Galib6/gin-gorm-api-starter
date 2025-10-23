@@ -19,9 +19,9 @@ func NewUserQuery(db *gorm.DB) *userQuery {
 	return &userQuery{db: db}
 }
 
-func (uq *userQuery) GetAllUsers(ctx context.Context, req dto.UserGetsRequest,
+func (qr *userQuery) GetAllUsers(ctx context.Context, req dto.UserGetsRequest,
 ) ([]entity.User, base.PaginationResponse, error) {
-	stmt := uq.db.WithContext(ctx).Debug().Model(&entity.User{})
+	stmt := qr.db.WithContext(ctx).Debug().Model(&entity.User{})
 
 	if req.ID != "" {
 		stmt = stmt.Where("id = ?", req.ID)

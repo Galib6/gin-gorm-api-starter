@@ -42,35 +42,35 @@ func getSecretKey() string {
 	return secretKey
 }
 
-func (j *jwtService) GenerateToken(id string, role string) string {
+func (sv *jwtService) GenerateToken(id string, role string) string {
 	claims := &jwtCustomClaim{
 		id,
 		role,
 		jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * 120)),
-			Issuer:    j.issuer,
+			Issuer:    sv.issuer,
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	t, err := token.SignedString([]byte(j.secretKey))
+	t, err := token.SignedString([]byte(sv.secretKey))
 	if err != nil {
 		log.Println(err)
 	}
 	return t
 }
 
-func (j *jwtService) ValidateToken(token string) (*jwt.Token, error) {
+func (sv *jwtService) ValidateToken(token string) (*jwt.Token, error) {
 	return jwt.Parse(token, func(t_ *jwt.Token) (any, error) {
 		if _, ok := t_.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method %v", t_.Header["alg"])
 		}
-		return []byte(j.secretKey), nil
+		return []byte(sv.secretKey), nil
 	})
 }
 
-func (j *jwtService) GetAttrByToken(token string) (string, string, error) {
-	tToken, err := j.ValidateToken(token)
+func (sv *jwtService) GetAttrByToken(token string) (string, string, error) {
+	tToken, err := sv.ValidateToken(token)
 	if err != nil {
 		return "", "", err
 	}

@@ -22,7 +22,7 @@ func NewFileController() FileController {
 	return &fileController{}
 }
 
-func (fc *fileController) GetFile(ctx *gin.Context) {
+func (ct *fileController) GetFile(ctx *gin.Context) {
 	dir := ctx.Param("dir")
 	fileID := ctx.Param("file_id")
 

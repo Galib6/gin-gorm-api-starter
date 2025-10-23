@@ -9,9 +9,7 @@ import (
 
 func Execute(db *gorm.DB) {
 	if len(os.Args) < 2 {
-		fmt.Println("❌ No command provided.")
-		printHelp()
-		os.Exit(1)
+		return
 	}
 
 	command := os.Args[1]

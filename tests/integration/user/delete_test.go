@@ -8,6 +8,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 	errs "github.com/zetsux/gin-gorm-api-starter/core/helper/errors"
+	"github.com/zetsux/gin-gorm-api-starter/core/helper/messages"
 	"github.com/zetsux/gin-gorm-api-starter/support/base"
 	"github.com/zetsux/gin-gorm-api-starter/tests/testutil"
 )
@@ -18,7 +19,7 @@ func TestIntegration_DeleteUser(t *testing.T) {
 	server := testApp.Server
 
 	// Create user and get token
-	token := createUserAndGetToken(t, server, "Charlie Brown", "charlie@example.com", "password123")
+	token := testutil.CreateUserAndGetToken(t, server, "Charlie Brown", "charlie@example.com", "password123")
 
 	// Test delete user
 	req := httptest.NewRequest(http.MethodDelete, "/api/v1/users/me", nil)
@@ -33,7 +34,7 @@ func TestIntegration_DeleteUser(t *testing.T) {
 	err := json.Unmarshal(w.Body.Bytes(), &resp)
 	require.NoError(t, err)
 	require.True(t, resp.IsSuccess)
-	require.Equal(t, "User delete successful", resp.Message)
+	require.Equal(t, messages.MsgUserDeleteSuccess, resp.Message)
 
 	// Verify user cannot access profile after deletion
 	req = httptest.NewRequest(http.MethodGet, "/api/v1/users/me", nil)

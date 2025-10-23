@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"github.com/zetsux/gin-gorm-api-starter/core/helper/messages"
 	"github.com/zetsux/gin-gorm-api-starter/support/base"
 	"github.com/zetsux/gin-gorm-api-starter/tests/testutil"
 )
@@ -20,7 +21,7 @@ func TestIntegration_GetMe(t *testing.T) {
 	name := "Alice Johnson"
 	email := "alice@example.com"
 	password := "password123"
-	token := createUserAndGetToken(t, server, name, email, password)
+	token := testutil.CreateUserAndGetToken(t, server, name, email, password)
 
 	// Test get me
 	req := httptest.NewRequest(http.MethodGet, "/api/v1/users/me", nil)
@@ -35,7 +36,7 @@ func TestIntegration_GetMe(t *testing.T) {
 	err := json.Unmarshal(w.Body.Bytes(), &resp)
 	require.NoError(t, err)
 	require.True(t, resp.IsSuccess)
-	require.Equal(t, "User fetched successfully", resp.Message)
+	require.Equal(t, messages.MsgUserFetchSuccess, resp.Message)
 
 	userData := resp.Data.(map[string]interface{})
 	require.Equal(t, email, userData["email"])

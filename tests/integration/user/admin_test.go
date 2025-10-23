@@ -9,6 +9,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/zetsux/gin-gorm-api-starter/core/helper/dto"
+	"github.com/zetsux/gin-gorm-api-starter/core/helper/messages"
 	"github.com/zetsux/gin-gorm-api-starter/support/base"
 	"github.com/zetsux/gin-gorm-api-starter/support/constant"
 	"github.com/zetsux/gin-gorm-api-starter/tests/testutil"
@@ -23,7 +24,7 @@ func TestIntegration_GetUsersByAdmin(t *testing.T) {
 	// Create admin user and get token
 	adminEmail, adminPass := "admin@mail.com", "password123"
 	factory.SeedUser(t, testApp.UserRepo, "Admin User", adminEmail, adminPass, constant.EnumRoleAdmin)
-	token := getToken(t, server, adminEmail, adminPass)
+	token := testutil.GetToken(t, server, adminEmail, adminPass)
 
 	// Create regular users
 	factory.SeedUsers(t, testApp.UserRepo, 15)
@@ -41,7 +42,7 @@ func TestIntegration_GetUsersByAdmin(t *testing.T) {
 	err := json.Unmarshal(w.Body.Bytes(), &resp)
 	require.NoError(t, err)
 	require.True(t, resp.IsSuccess)
-	require.Equal(t, "Users fetched successfully", resp.Message)
+	require.Equal(t, messages.MsgUsersFetchSuccess, resp.Message)
 
 	// Verify response data contains user info
 	userData := resp.Data.([]interface{})
@@ -55,7 +56,7 @@ func TestIntegration_GetUsersByAdmin_Forbidden(t *testing.T) {
 	server := testApp.Server
 
 	// Create regular user and get token
-	token := createUserAndGetToken(t, server, "Regular User", "regular@example.com", "password123")
+	token := testutil.CreateUserAndGetToken(t, server, "Regular User", "regular@example.com", "password123")
 
 	req := httptest.NewRequest(http.MethodGet, "/api/v1/users", nil)
 	req.Header.Set("Authorization", "Bearer "+token)
@@ -78,7 +79,7 @@ func TestIntegration_DeleteUserByAdmin(t *testing.T) {
 	// Create admin user and get token
 	adminEmail, adminPass := "admin@mail.com", "password123"
 	factory.SeedUser(t, testApp.UserRepo, "Admin User", adminEmail, adminPass, constant.EnumRoleAdmin)
-	token := getToken(t, server, adminEmail, adminPass)
+	token := testutil.GetToken(t, server, adminEmail, adminPass)
 
 	// Create regular user to delete
 	user := factory.SeedUser(t, testApp.UserRepo, "User To Delete", "user_to_delete@example.com", "password123", constant.EnumRoleUser)
@@ -96,7 +97,7 @@ func TestIntegration_DeleteUserByAdmin(t *testing.T) {
 	err := json.Unmarshal(w.Body.Bytes(), &resp)
 	require.NoError(t, err)
 	require.True(t, resp.IsSuccess)
-	require.Equal(t, "User delete successful", resp.Message)
+	require.Equal(t, messages.MsgUserDeleteSuccess, resp.Message)
 
 	// Verify user cannot login after deletion
 	loginReq := dto.UserLoginRequest{
@@ -122,7 +123,7 @@ func TestIntegration_DeleteUserByAdmin_Forbidden(t *testing.T) {
 	server := testApp.Server
 
 	// Create regular user and get token
-	token := createUserAndGetToken(t, server, "Regular User", "regular@example.com", "password123")
+	token := testutil.CreateUserAndGetToken(t, server, "Regular User", "regular@example.com", "password123")
 
 	// Create another user to attempt deletion
 	user := factory.SeedUser(t, testApp.UserRepo, "User To Delete", "user_to_delete@example.com", "password123", constant.EnumRoleUser)
@@ -148,7 +149,7 @@ func TestIntegration_UpdateUserByAdmin(t *testing.T) {
 	// Create admin user and get token
 	adminEmail, adminPass := "admin@mail.com", "password123"
 	factory.SeedUser(t, testApp.UserRepo, "Admin User", adminEmail, adminPass, constant.EnumRoleAdmin)
-	token := getToken(t, server, adminEmail, adminPass)
+	token := testutil.GetToken(t, server, adminEmail, adminPass)
 
 	// Create regular user to update
 	user := factory.SeedUser(t, testApp.UserRepo, "User To Update", "user_to_update@example.com", "password123", constant.EnumRoleUser)
@@ -172,7 +173,7 @@ func TestIntegration_UpdateUserByAdmin(t *testing.T) {
 	err := json.Unmarshal(w.Body.Bytes(), &resp)
 	require.NoError(t, err)
 	require.True(t, resp.IsSuccess)
-	require.Equal(t, "User update successful", resp.Message)
+	require.Equal(t, messages.MsgUserUpdateSuccess, resp.Message)
 
 	// Verify response data contains updated info
 	userData := resp.Data.(map[string]interface{})
@@ -180,7 +181,7 @@ func TestIntegration_UpdateUserByAdmin(t *testing.T) {
 	require.Equal(t, "updated_user@example.com", userData["email"])
 
 	// Verify user can login with updated email
-	_ = getToken(t, server, "updated_user@example.com", "password123")
+	_ = testutil.GetToken(t, server, "updated_user@example.com", "password123")
 }
 
 // Test update user by non-admin
@@ -189,7 +190,7 @@ func TestIntegration_UpdateUserByAdmin_Forbidden(t *testing.T) {
 	server := testApp.Server
 
 	// Create regular user and get token
-	token := createUserAndGetToken(t, server, "Regular User", "regular@example.com", "password123")
+	token := testutil.CreateUserAndGetToken(t, server, "Regular User", "regular@example.com", "password123")
 
 	// Create another user to attempt update
 	user := factory.SeedUser(t, testApp.UserRepo, "User To Update", "user_to_update@example.com", "password123", constant.EnumRoleUser)

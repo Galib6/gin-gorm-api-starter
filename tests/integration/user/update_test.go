@@ -9,6 +9,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/zetsux/gin-gorm-api-starter/core/helper/dto"
+	"github.com/zetsux/gin-gorm-api-starter/core/helper/messages"
 	"github.com/zetsux/gin-gorm-api-starter/support/base"
 	"github.com/zetsux/gin-gorm-api-starter/tests/testutil"
 )
@@ -19,7 +20,7 @@ func TestIntegration_UpdateUserName(t *testing.T) {
 	server := testApp.Server
 
 	// Create user and get token
-	token := createUserAndGetToken(t, server, "Bob Wilson", "bob@example.com", "password123")
+	token := testutil.CreateUserAndGetToken(t, server, "Bob Wilson", "bob@example.com", "password123")
 
 	// Test update name
 	updateReq := dto.UserNameUpdateRequest{Name: "Bob Updated"}
@@ -37,7 +38,7 @@ func TestIntegration_UpdateUserName(t *testing.T) {
 	err := json.Unmarshal(w.Body.Bytes(), &resp)
 	require.NoError(t, err)
 	require.True(t, resp.IsSuccess)
-	require.Equal(t, "User update successful", resp.Message)
+	require.Equal(t, messages.MsgUserUpdateSuccess, resp.Message)
 
 	// Verify the response
 	userData := resp.Data.(map[string]interface{})
@@ -89,8 +90,8 @@ func TestIntegration_MultipleUsersIsolation(t *testing.T) {
 	server := testApp.Server
 
 	// Create multiple users
-	token1 := createUserAndGetToken(t, server, "User One", "user1@example.com", "pass1")
-	token2 := createUserAndGetToken(t, server, "User Two", "user2@example.com", "pass2")
+	token1 := testutil.CreateUserAndGetToken(t, server, "User One", "user1@example.com", "pass1")
+	token2 := testutil.CreateUserAndGetToken(t, server, "User Two", "user2@example.com", "pass2")
 
 	// User 1 updates their name
 	updateReq := dto.UserNameUpdateRequest{Name: "User One Updated"}

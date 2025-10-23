@@ -7,59 +7,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/require"
 	"github.com/zetsux/gin-gorm-api-starter/core/helper/dto"
+	"github.com/zetsux/gin-gorm-api-starter/core/helper/messages"
 	"github.com/zetsux/gin-gorm-api-starter/support/base"
 	"github.com/zetsux/gin-gorm-api-starter/tests/testutil"
 )
-
-// Helper function to return user token
-func getToken(t *testing.T, server *gin.Engine, email, password string) string {
-	t.Helper()
-
-	// Login to get token
-	loginReq := dto.UserLoginRequest{
-		Email:    email,
-		Password: password,
-	}
-
-	body, _ := json.Marshal(loginReq)
-	req := httptest.NewRequest(http.MethodPost, "/api/v1/users/login", bytes.NewReader(body))
-	req.Header.Set("Content-Type", "application/json")
-	w := httptest.NewRecorder()
-	server.ServeHTTP(w, req)
-	require.Equal(t, http.StatusOK, w.Code)
-
-	var loginResp base.Response
-	json.Unmarshal(w.Body.Bytes(), &loginResp)
-	authData := loginResp.Data.(map[string]interface{})
-	token := authData["token"].(string)
-	require.NotEmpty(t, token)
-
-	return token
-}
-
-// Helper function to create a user and return token
-func createUserAndGetToken(t *testing.T, server *gin.Engine, name, email, password string) string {
-	t.Helper()
-
-	// Register user
-	regReq := dto.UserRegisterRequest{
-		Name:     name,
-		Email:    email,
-		Password: password,
-	}
-
-	body, _ := json.Marshal(regReq)
-	req := httptest.NewRequest(http.MethodPost, "/api/v1/users", bytes.NewReader(body))
-	req.Header.Set("Content-Type", "application/json")
-	w := httptest.NewRecorder()
-	server.ServeHTTP(w, req)
-	require.Equal(t, http.StatusCreated, w.Code)
-
-	return getToken(t, server, email, password)
-}
 
 // Test user registration endpoint
 func TestIntegration_UserRegistration(t *testing.T) {
@@ -85,7 +38,7 @@ func TestIntegration_UserRegistration(t *testing.T) {
 	err := json.Unmarshal(w.Body.Bytes(), &regResp)
 	require.NoError(t, err)
 	require.True(t, regResp.IsSuccess)
-	require.Equal(t, "User register successful", regResp.Message)
+	require.Equal(t, messages.MsgUserRegisterSuccess, regResp.Message)
 
 	// Verify response data contains user info
 	userData := regResp.Data.(map[string]interface{})
@@ -215,7 +168,7 @@ func TestIntegration_UserLogin(t *testing.T) {
 	err := json.Unmarshal(w.Body.Bytes(), &loginResp)
 	require.NoError(t, err)
 	require.True(t, loginResp.IsSuccess)
-	require.Equal(t, "User login successful", loginResp.Message)
+	require.Equal(t, messages.MsgUserLoginSuccess, loginResp.Message)
 
 	// Verify response contains token and user data
 	authData := loginResp.Data.(map[string]interface{})
@@ -249,7 +202,7 @@ func TestIntegration_UserLogin_InvalidCredentials(t *testing.T) {
 	}
 
 	// Create a test user for wrong password test
-	createUserAndGetToken(t, server, "Test User", "test@example.com", "correctpassword")
+	testutil.CreateUserAndGetToken(t, server, "Test User", "test@example.com", "correctpassword")
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {

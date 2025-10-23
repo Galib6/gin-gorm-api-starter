@@ -38,15 +38,15 @@ func NewUserController(userS service.UserService, jwtS service.JWTService) UserC
 	}
 }
 
-func (uc *userController) Register(ctx *gin.Context) {
-	var userDTO dto.UserRegisterRequest
-	if err := ctx.ShouldBind(&userDTO); err != nil {
-		msg := base.GetValidationErrorMessage(err, userDTO, messages.MsgUserRegisterFailed)
+func (ct *userController) Register(ctx *gin.Context) {
+	var req dto.UserRegisterRequest
+	if err := ctx.ShouldBind(&req); err != nil {
+		msg := base.GetValidationErrorMessage(err, req, messages.MsgUserRegisterFailed)
 		_ = ctx.Error(base.NewAppError(http.StatusBadRequest, msg, err))
 		return
 	}
 
-	newUser, err := uc.userService.CreateNewUser(ctx, userDTO)
+	newUser, err := ct.userService.CreateNewUser(ctx, req)
 	if err != nil {
 		_ = ctx.Error(base.NewAppError(http.StatusBadRequest,
 			messages.MsgUserRegisterFailed, err))
@@ -59,29 +59,29 @@ func (uc *userController) Register(ctx *gin.Context) {
 	))
 }
 
-func (uc *userController) Login(ctx *gin.Context) {
-	var userDTO dto.UserLoginRequest
-	if err := ctx.ShouldBind(&userDTO); err != nil {
-		msg := base.GetValidationErrorMessage(err, userDTO, messages.MsgUserLoginFailed)
+func (ct *userController) Login(ctx *gin.Context) {
+	var req dto.UserLoginRequest
+	if err := ctx.ShouldBind(&req); err != nil {
+		msg := base.GetValidationErrorMessage(err, req, messages.MsgUserLoginFailed)
 		_ = ctx.Error(base.NewAppError(http.StatusBadRequest, msg, err))
 		return
 	}
 
-	res := uc.userService.VerifyLogin(ctx, userDTO.Email, userDTO.Password)
+	res := ct.userService.VerifyLogin(ctx, req.Email, req.Password)
 	if !res {
 		_ = ctx.Error(base.NewAppError(http.StatusUnauthorized,
 			messages.MsgUserWrongCredential, nil))
 		return
 	}
 
-	user, err := uc.userService.GetUserByPrimaryKey(ctx, constant.DBAttrEmail, userDTO.Email)
+	user, err := ct.userService.GetUserByPrimaryKey(ctx, constant.DBAttrEmail, req.Email)
 	if err != nil {
 		_ = ctx.Error(base.NewAppError(http.StatusBadRequest,
 			messages.MsgUserLoginFailed, err))
 		return
 	}
 
-	token := uc.jwtService.GenerateToken(user.ID, user.Role)
+	token := ct.jwtService.GenerateToken(user.ID, user.Role)
 	authResp := base.CreateAuthResponse(token, user.Role)
 	ctx.JSON(http.StatusOK, base.CreateSuccessResponse(
 		messages.MsgUserLoginSuccess,
@@ -89,7 +89,7 @@ func (uc *userController) Login(ctx *gin.Context) {
 	))
 }
 
-func (uc *userController) GetAllUsers(ctx *gin.Context) {
+func (ct *userController) GetAllUsers(ctx *gin.Context) {
 	var req dto.UserGetsRequest
 	if err := ctx.ShouldBind(&req); err != nil {
 		msg := base.GetValidationErrorMessage(err, req, messages.MsgUsersFetchFailed)
@@ -97,7 +97,7 @@ func (uc *userController) GetAllUsers(ctx *gin.Context) {
 		return
 	}
 
-	users, pageMeta, err := uc.userService.GetAllUsers(ctx, req)
+	users, pageMeta, err := ct.userService.GetAllUsers(ctx, req)
 	if err != nil {
 		_ = ctx.Error(base.NewAppError(http.StatusBadRequest,
 			messages.MsgUsersFetchFailed, err))
@@ -117,9 +117,9 @@ func (uc *userController) GetAllUsers(ctx *gin.Context) {
 	}
 }
 
-func (uc *userController) GetMe(ctx *gin.Context) {
+func (ct *userController) GetMe(ctx *gin.Context) {
 	id := ctx.MustGet("ID").(string)
-	user, err := uc.userService.GetUserByPrimaryKey(ctx, constant.DBAttrID, id)
+	user, err := ct.userService.GetUserByPrimaryKey(ctx, constant.DBAttrID, id)
 	if err != nil {
 		_ = ctx.Error(base.NewAppError(http.StatusBadRequest,
 			messages.MsgUserFetchFailed, err))
@@ -132,18 +132,18 @@ func (uc *userController) GetMe(ctx *gin.Context) {
 	))
 }
 
-func (uc *userController) UpdateSelfName(ctx *gin.Context) {
+func (ct *userController) UpdateSelfName(ctx *gin.Context) {
 	id := ctx.MustGet("ID").(string)
 
-	var userDTO dto.UserNameUpdateRequest
-	if err := ctx.ShouldBind(&userDTO); err != nil {
-		msg := base.GetValidationErrorMessage(err, userDTO, messages.MsgUserUpdateFailed)
+	var req dto.UserNameUpdateRequest
+	if err := ctx.ShouldBind(&req); err != nil {
+		msg := base.GetValidationErrorMessage(err, req, messages.MsgUserUpdateFailed)
 		_ = ctx.Error(base.NewAppError(http.StatusBadRequest, msg, err))
 		return
 	}
 
-	userDTO.ID = id
-	user, err := uc.userService.UpdateSelfName(ctx, userDTO)
+	req.ID = id
+	user, err := ct.userService.UpdateSelfName(ctx, req)
 	if err != nil {
 		_ = ctx.Error(base.NewAppError(http.StatusBadRequest,
 			messages.MsgUserUpdateFailed, err))
@@ -156,18 +156,18 @@ func (uc *userController) UpdateSelfName(ctx *gin.Context) {
 	))
 }
 
-func (uc *userController) UpdateUserByID(ctx *gin.Context) {
+func (ct *userController) UpdateUserByID(ctx *gin.Context) {
 	id := ctx.Param("user_id")
 
-	var userDTO dto.UserUpdateRequest
-	if err := ctx.ShouldBind(&userDTO); err != nil {
-		msg := base.GetValidationErrorMessage(err, userDTO, messages.MsgUserUpdateFailed)
+	var req dto.UserUpdateRequest
+	if err := ctx.ShouldBind(&req); err != nil {
+		msg := base.GetValidationErrorMessage(err, req, messages.MsgUserUpdateFailed)
 		_ = ctx.Error(base.NewAppError(http.StatusBadRequest, msg, err))
 		return
 	}
 
-	userDTO.ID = id
-	user, err := uc.userService.UpdateUserByID(ctx, userDTO)
+	req.ID = id
+	user, err := ct.userService.UpdateUserByID(ctx, req)
 	if err != nil {
 		_ = ctx.Error(base.NewAppError(http.StatusBadRequest,
 			messages.MsgUserUpdateFailed, err))
@@ -180,9 +180,9 @@ func (uc *userController) UpdateUserByID(ctx *gin.Context) {
 	))
 }
 
-func (uc *userController) DeleteSelfUser(ctx *gin.Context) {
+func (ct *userController) DeleteSelfUser(ctx *gin.Context) {
 	id := ctx.MustGet("ID").(string)
-	err := uc.userService.DeleteUserByID(ctx, id)
+	err := ct.userService.DeleteUserByID(ctx, id)
 	if err != nil {
 		_ = ctx.Error(base.NewAppError(http.StatusBadRequest,
 			messages.MsgUserDeleteFailed, err))
@@ -195,9 +195,9 @@ func (uc *userController) DeleteSelfUser(ctx *gin.Context) {
 	))
 }
 
-func (uc *userController) DeleteUserByID(ctx *gin.Context) {
+func (ct *userController) DeleteUserByID(ctx *gin.Context) {
 	id := ctx.Param("user_id")
-	err := uc.userService.DeleteUserByID(ctx, id)
+	err := ct.userService.DeleteUserByID(ctx, id)
 	if err != nil {
 		_ = ctx.Error(base.NewAppError(http.StatusBadRequest,
 			messages.MsgUserDeleteFailed, err))
@@ -210,17 +210,17 @@ func (uc *userController) DeleteUserByID(ctx *gin.Context) {
 	))
 }
 
-func (uc *userController) ChangePicture(ctx *gin.Context) {
+func (ct *userController) ChangePicture(ctx *gin.Context) {
 	id := ctx.MustGet("ID").(string)
 
-	var userDTO dto.UserChangePictureRequest
-	if err := ctx.ShouldBind(&userDTO); err != nil {
-		msg := base.GetValidationErrorMessage(err, userDTO, messages.MsgUserPictureUpdateFailed)
+	var req dto.UserChangePictureRequest
+	if err := ctx.ShouldBind(&req); err != nil {
+		msg := base.GetValidationErrorMessage(err, req, messages.MsgUserPictureUpdateFailed)
 		_ = ctx.Error(base.NewAppError(http.StatusBadRequest, msg, err))
 		return
 	}
 
-	res, err := uc.userService.ChangePicture(ctx, userDTO, id)
+	res, err := ct.userService.ChangePicture(ctx, req, id)
 	if err != nil {
 		_ = ctx.Error(base.NewAppError(http.StatusBadRequest,
 			messages.MsgUserPictureUpdateFailed, err))
@@ -233,9 +233,9 @@ func (uc *userController) ChangePicture(ctx *gin.Context) {
 	))
 }
 
-func (uc *userController) DeletePicture(ctx *gin.Context) {
+func (ct *userController) DeletePicture(ctx *gin.Context) {
 	id := ctx.Param("user_id")
-	err := uc.userService.DeletePicture(ctx, id)
+	err := ct.userService.DeletePicture(ctx, id)
 	if err != nil {
 		_ = ctx.Error(base.NewAppError(http.StatusBadRequest,
 			messages.MsgUserPictureDeleteFailed, err))

@@ -119,7 +119,7 @@ func (uc *userController) DeleteUserByID(ctx *gin.Context) {
 func (uc *userController) ChangePicture(ctx *gin.Context) {
 	id := ctx.MustGet("ID").(string)
 	HandleUpdate(ctx, id, dto.UserChangePictureRequest{}, uc.userService.ChangePicture,
-		messages.MsgUserUpdateSuccess, messages.MsgUserUpdateFailed)
+		messages.MsgUserPictureUpdateSuccess, messages.MsgUserPictureUpdateFailed)
 }
 
 func (uc *userController) DeletePicture(ctx *gin.Context) {

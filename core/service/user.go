@@ -29,7 +29,7 @@ type UserService interface {
 	UpdateSelfName(ctx context.Context, req dto.UserNameUpdateRequest) (dto.UserResponse, error)
 	UpdateUserByID(ctx context.Context, req dto.UserUpdateRequest) (dto.UserResponse, error)
 	DeleteUserByID(ctx context.Context, id string) error
-	ChangePicture(ctx context.Context, req dto.UserChangePictureRequest, userID string) (dto.UserResponse, error)
+	ChangePicture(ctx context.Context, req dto.UserChangePictureRequest) (dto.UserResponse, error)
 	DeletePicture(ctx context.Context, userID string) error
 }
 
@@ -208,8 +208,8 @@ func (sv *userService) DeleteUserByID(ctx context.Context, id string) error {
 }
 
 func (sv *userService) ChangePicture(ctx context.Context,
-	req dto.UserChangePictureRequest, userID string) (dto.UserResponse, error) {
-	user, err := sv.userRepository.GetUserByPrimaryKey(ctx, nil, constant.DBAttrID, userID)
+	req dto.UserChangePictureRequest) (dto.UserResponse, error) {
+	user, err := sv.userRepository.GetUserByPrimaryKey(ctx, nil, constant.DBAttrID, req.ID)
 	if err != nil {
 		return dto.UserResponse{}, err
 	}

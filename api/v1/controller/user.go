@@ -2,7 +2,6 @@ package controller
 
 import (
 	"net/http"
-	"reflect"
 
 	"github.com/zetsux/gin-gorm-api-starter/core/helper/dto"
 	"github.com/zetsux/gin-gorm-api-starter/core/helper/messages"
@@ -38,50 +37,34 @@ func NewUserController(userS service.UserService, jwtS service.JWTService) UserC
 	}
 }
 
-func (ct *userController) Register(ctx *gin.Context) {
-	var req dto.UserRegisterRequest
-	if err := ctx.ShouldBind(&req); err != nil {
-		msg := base.GetValidationErrorMessage(err, req, messages.MsgUserRegisterFailed)
-		_ = ctx.Error(base.NewAppError(http.StatusBadRequest, msg, err))
-		return
-	}
-
-	newUser, err := ct.userService.CreateNewUser(ctx, req)
-	if err != nil {
-		_ = ctx.Error(base.NewAppError(http.StatusBadRequest,
-			messages.MsgUserRegisterFailed, err))
-		return
-	}
-
-	ctx.JSON(http.StatusCreated, base.CreateSuccessResponse(
-		messages.MsgUserRegisterSuccess,
-		http.StatusCreated, newUser,
-	))
+func (uc *userController) Register(ctx *gin.Context) {
+	HandleCreate(ctx, dto.UserRegisterRequest{}, uc.userService.CreateNewUser,
+		messages.MsgUserRegisterSuccess, messages.MsgUserRegisterFailed)
 }
 
-func (ct *userController) Login(ctx *gin.Context) {
-	var req dto.UserLoginRequest
-	if err := ctx.ShouldBind(&req); err != nil {
-		msg := base.GetValidationErrorMessage(err, req, messages.MsgUserLoginFailed)
+func (uc *userController) Login(ctx *gin.Context) {
+	var userDTO dto.UserLoginRequest
+	if err := ctx.ShouldBind(&userDTO); err != nil {
+		msg := base.GetValidationErrorMessage(err, userDTO, messages.MsgUserLoginFailed)
 		_ = ctx.Error(base.NewAppError(http.StatusBadRequest, msg, err))
 		return
 	}
 
-	res := ct.userService.VerifyLogin(ctx, req.Email, req.Password)
+	res := uc.userService.VerifyLogin(ctx, userDTO.Email, userDTO.Password)
 	if !res {
 		_ = ctx.Error(base.NewAppError(http.StatusUnauthorized,
 			messages.MsgUserWrongCredential, nil))
 		return
 	}
 
-	user, err := ct.userService.GetUserByPrimaryKey(ctx, constant.DBAttrEmail, req.Email)
+	user, err := uc.userService.GetUserByPrimaryKey(ctx, constant.DBAttrEmail, userDTO.Email)
 	if err != nil {
 		_ = ctx.Error(base.NewAppError(http.StatusBadRequest,
 			messages.MsgUserLoginFailed, err))
 		return
 	}
 
-	token := ct.jwtService.GenerateToken(user.ID, user.Role)
+	token := uc.jwtService.GenerateToken(user.ID, user.Role)
 	authResp := base.CreateAuthResponse(token, user.Role)
 	ctx.JSON(http.StatusOK, base.CreateSuccessResponse(
 		messages.MsgUserLoginSuccess,
@@ -89,37 +72,14 @@ func (ct *userController) Login(ctx *gin.Context) {
 	))
 }
 
-func (ct *userController) GetAllUsers(ctx *gin.Context) {
-	var req dto.UserGetsRequest
-	if err := ctx.ShouldBind(&req); err != nil {
-		msg := base.GetValidationErrorMessage(err, req, messages.MsgUsersFetchFailed)
-		_ = ctx.Error(base.NewAppError(http.StatusBadRequest, msg, err))
-		return
-	}
-
-	users, pageMeta, err := ct.userService.GetAllUsers(ctx, req)
-	if err != nil {
-		_ = ctx.Error(base.NewAppError(http.StatusBadRequest,
-			messages.MsgUsersFetchFailed, err))
-		return
-	}
-
-	if reflect.DeepEqual(pageMeta, base.PaginationResponse{}) {
-		ctx.JSON(http.StatusOK, base.CreateSuccessResponse(
-			messages.MsgUsersFetchSuccess,
-			http.StatusOK, users,
-		))
-	} else {
-		ctx.JSON(http.StatusOK, base.CreatePaginatedResponse(
-			messages.MsgUsersFetchSuccess,
-			http.StatusOK, users, pageMeta,
-		))
-	}
+func (uc *userController) GetAllUsers(ctx *gin.Context) {
+	HandleGetAll(ctx, dto.UserGetsRequest{}, uc.userService.GetAllUsers,
+		messages.MsgUsersFetchSuccess, messages.MsgUsersFetchFailed)
 }
 
-func (ct *userController) GetMe(ctx *gin.Context) {
+func (uc *userController) GetMe(ctx *gin.Context) {
 	id := ctx.MustGet("ID").(string)
-	user, err := ct.userService.GetUserByPrimaryKey(ctx, constant.DBAttrID, id)
+	user, err := uc.userService.GetUserByPrimaryKey(ctx, constant.DBAttrID, id)
 	if err != nil {
 		_ = ctx.Error(base.NewAppError(http.StatusBadRequest,
 			messages.MsgUserFetchFailed, err))
@@ -132,118 +92,38 @@ func (ct *userController) GetMe(ctx *gin.Context) {
 	))
 }
 
-func (ct *userController) UpdateSelfName(ctx *gin.Context) {
+func (uc *userController) UpdateSelfName(ctx *gin.Context) {
 	id := ctx.MustGet("ID").(string)
-
-	var req dto.UserNameUpdateRequest
-	if err := ctx.ShouldBind(&req); err != nil {
-		msg := base.GetValidationErrorMessage(err, req, messages.MsgUserUpdateFailed)
-		_ = ctx.Error(base.NewAppError(http.StatusBadRequest, msg, err))
-		return
-	}
-
-	req.ID = id
-	user, err := ct.userService.UpdateSelfName(ctx, req)
-	if err != nil {
-		_ = ctx.Error(base.NewAppError(http.StatusBadRequest,
-			messages.MsgUserUpdateFailed, err))
-		return
-	}
-
-	ctx.JSON(http.StatusOK, base.CreateSuccessResponse(
-		messages.MsgUserUpdateSuccess,
-		http.StatusOK, user,
-	))
+	HandleUpdate(ctx, id, dto.UserNameUpdateRequest{}, uc.userService.UpdateSelfName,
+		messages.MsgUserUpdateSuccess, messages.MsgUserUpdateFailed)
 }
 
-func (ct *userController) UpdateUserByID(ctx *gin.Context) {
+func (uc *userController) UpdateUserByID(ctx *gin.Context) {
 	id := ctx.Param("user_id")
-
-	var req dto.UserUpdateRequest
-	if err := ctx.ShouldBind(&req); err != nil {
-		msg := base.GetValidationErrorMessage(err, req, messages.MsgUserUpdateFailed)
-		_ = ctx.Error(base.NewAppError(http.StatusBadRequest, msg, err))
-		return
-	}
-
-	req.ID = id
-	user, err := ct.userService.UpdateUserByID(ctx, req)
-	if err != nil {
-		_ = ctx.Error(base.NewAppError(http.StatusBadRequest,
-			messages.MsgUserUpdateFailed, err))
-		return
-	}
-
-	ctx.JSON(http.StatusOK, base.CreateSuccessResponse(
-		messages.MsgUserUpdateSuccess,
-		http.StatusOK, user,
-	))
+	HandleUpdate(ctx, id, dto.UserUpdateRequest{}, uc.userService.UpdateUserByID,
+		messages.MsgUserUpdateSuccess, messages.MsgUserUpdateFailed)
 }
 
-func (ct *userController) DeleteSelfUser(ctx *gin.Context) {
+func (uc *userController) DeleteSelfUser(ctx *gin.Context) {
 	id := ctx.MustGet("ID").(string)
-	err := ct.userService.DeleteUserByID(ctx, id)
-	if err != nil {
-		_ = ctx.Error(base.NewAppError(http.StatusBadRequest,
-			messages.MsgUserDeleteFailed, err))
-		return
-	}
-
-	ctx.JSON(http.StatusOK, base.CreateSuccessResponse(
-		messages.MsgUserDeleteSuccess,
-		http.StatusOK, nil,
-	))
+	HandleDelete(ctx, id, uc.userService.DeleteUserByID,
+		messages.MsgUserDeleteSuccess, messages.MsgUserDeleteFailed)
 }
 
-func (ct *userController) DeleteUserByID(ctx *gin.Context) {
+func (uc *userController) DeleteUserByID(ctx *gin.Context) {
 	id := ctx.Param("user_id")
-	err := ct.userService.DeleteUserByID(ctx, id)
-	if err != nil {
-		_ = ctx.Error(base.NewAppError(http.StatusBadRequest,
-			messages.MsgUserDeleteFailed, err))
-		return
-	}
-
-	ctx.JSON(http.StatusOK, base.CreateSuccessResponse(
-		messages.MsgUserDeleteSuccess,
-		http.StatusOK, nil,
-	))
+	HandleDelete(ctx, id, uc.userService.DeleteUserByID,
+		messages.MsgUserDeleteSuccess, messages.MsgUserDeleteFailed)
 }
 
-func (ct *userController) ChangePicture(ctx *gin.Context) {
+func (uc *userController) ChangePicture(ctx *gin.Context) {
 	id := ctx.MustGet("ID").(string)
-
-	var req dto.UserChangePictureRequest
-	if err := ctx.ShouldBind(&req); err != nil {
-		msg := base.GetValidationErrorMessage(err, req, messages.MsgUserPictureUpdateFailed)
-		_ = ctx.Error(base.NewAppError(http.StatusBadRequest, msg, err))
-		return
-	}
-
-	res, err := ct.userService.ChangePicture(ctx, req, id)
-	if err != nil {
-		_ = ctx.Error(base.NewAppError(http.StatusBadRequest,
-			messages.MsgUserPictureUpdateFailed, err))
-		return
-	}
-
-	ctx.JSON(http.StatusOK, base.CreateSuccessResponse(
-		messages.MsgUserPictureUpdateSuccess,
-		http.StatusOK, res,
-	))
+	HandleUpdate(ctx, id, dto.UserChangePictureRequest{}, uc.userService.ChangePicture,
+		messages.MsgUserPictureUpdateSuccess, messages.MsgUserPictureUpdateFailed)
 }
 
-func (ct *userController) DeletePicture(ctx *gin.Context) {
+func (uc *userController) DeletePicture(ctx *gin.Context) {
 	id := ctx.Param("user_id")
-	err := ct.userService.DeletePicture(ctx, id)
-	if err != nil {
-		_ = ctx.Error(base.NewAppError(http.StatusBadRequest,
-			messages.MsgUserPictureDeleteFailed, err))
-		return
-	}
-
-	ctx.JSON(http.StatusOK, base.CreateSuccessResponse(
-		messages.MsgUserPictureDeleteSuccess,
-		http.StatusOK, nil,
-	))
+	HandleDelete(ctx, id, uc.userService.DeletePicture,
+		messages.MsgUserPictureDeleteSuccess, messages.MsgUserPictureDeleteFailed)
 }

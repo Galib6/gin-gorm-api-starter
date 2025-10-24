@@ -39,6 +39,7 @@ type (
 	}
 
 	UserChangePictureRequest struct {
+		ID      string                `json:"id"`
 		Picture *multipart.FileHeader `json:"picture" form:"picture"`
 	}
 

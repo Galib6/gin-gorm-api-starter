@@ -1,10 +1,11 @@
-package base
+package query
 
 import (
 	"math"
 	"strings"
 
 	errs "github.com/zetsux/gin-gorm-api-starter/core/helper/errors"
+	"github.com/zetsux/gin-gorm-api-starter/support/base"
 	"golang.org/x/exp/slices"
 	"gorm.io/gorm"
 )
@@ -27,8 +28,8 @@ func applySorting(stmt *gorm.DB, allowedSorts []string, sort string) *gorm.DB {
 	return stmt
 }
 
-func GetWithPagination[T any](stmt *gorm.DB, req PaginationRequest, allowedSorts []string,
-) (data []T, paginationResp PaginationResponse, err error) {
+func GetWithPagination[T any](stmt *gorm.DB, req base.PaginationRequest, allowedSorts []string,
+) (data []T, paginationResp base.PaginationResponse, err error) {
 	stmt = applySorting(stmt, allowedSorts, req.Sort)
 
 	if req.PerPage == 0 {

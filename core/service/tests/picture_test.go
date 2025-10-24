@@ -67,7 +67,7 @@ func TestUserService_ChangePicture(t *testing.T) {
 	repo.On("GetUserByPrimaryKey", ctx, (*gorm.DB)(nil), "id", createdUser.ID.String()).Return(createdUser, nil).Once()
 	repo.On("UpdateUser", ctx, (*gorm.DB)(nil), mock.AnythingOfType("entity.User")).Return(nil)
 
-	updated, err := us.ChangePicture(ctx, dto.UserChangePictureRequest{Picture: fh}, created.ID)
+	updated, err := us.ChangePicture(ctx, dto.UserChangePictureRequest{ID: created.ID, Picture: fh})
 	require.NoError(t, err)
 	require.NotEmpty(t, updated.Picture)
 	expectedFilePath := filepath.Join(tmpDir, "files", updated.Picture)

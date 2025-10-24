@@ -36,7 +36,7 @@ func (qr *userQuery) GetAllUsers(ctx context.Context, req dto.UserGetsRequest,
 		stmt = stmt.Where("name ILIKE ? OR email ILIKE ?", search, search)
 	}
 
-	users, pageResp, err := base.GetWithPagination[entity.User](stmt, req.PaginationRequest, allowedSorts)
+	users, pageResp, err := GetWithPagination[entity.User](stmt, req.PaginationRequest, allowedSorts)
 	if err != nil {
 		return nil, pageResp, err
 	}

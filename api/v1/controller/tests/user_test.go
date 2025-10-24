@@ -59,8 +59,8 @@ func (m *userServiceMock) DeleteUserByID(ctx context.Context, id string) error {
 	args := m.Called(ctx, id)
 	return args.Error(0)
 }
-func (m *userServiceMock) ChangePicture(ctx context.Context, req dto.UserChangePictureRequest, userID string) (dto.UserResponse, error) {
-	args := m.Called(ctx, req, userID)
+func (m *userServiceMock) ChangePicture(ctx context.Context, req dto.UserChangePictureRequest) (dto.UserResponse, error) {
+	args := m.Called(ctx, req)
 	return args.Get(0).(dto.UserResponse), args.Error(1)
 }
 func (m *userServiceMock) DeletePicture(ctx context.Context, userID string) error {
@@ -283,12 +283,12 @@ func TestUserController_ChangePicture(t *testing.T) {
 	require.NoError(t, err)
 	fileHeader := req.MultipartForm.File["picture"][0]
 
-	changePicReq := dto.UserChangePictureRequest{Picture: fileHeader}
-	usm.On("ChangePicture", mock.Anything, changePicReq, uuidStr).Return(
+	changePicReq := dto.UserChangePictureRequest{ID: uuidStr, Picture: fileHeader}
+	usm.On("ChangePicture", mock.Anything, changePicReq).Return(
 		dto.UserResponse{ID: uuidStr}, nil,
 	)
 
-	usm.On("ChangePicture", mock.Anything, changePicReq, uuidStr).
+	usm.On("ChangePicture", mock.Anything, changePicReq).
 		Return(dto.UserResponse{ID: uuidStr, Name: "Updated"}, nil)
 
 	r.ServeHTTP(w, req)

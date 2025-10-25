@@ -34,11 +34,12 @@ func applySorting(stmt *gorm.DB, allowedSorts []string, sort string) (*gorm.DB, 
 
 func applyIncludes(stmt *gorm.DB, allowedIncludes []string, includes string) (*gorm.DB, error) {
 	for _, include := range strings.Split(includes, ",") {
+		include = strings.TrimSpace(include)
 		if include == "" {
 			continue
 		}
 
-		allowedValues := "-"
+		allowedValues := "none"
 		if len(allowedIncludes) > 0 {
 			allowedValues = strings.Join(allowedIncludes, ", ")
 		}

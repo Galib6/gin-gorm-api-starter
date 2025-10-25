@@ -1,6 +1,7 @@
 package query
 
 import (
+	"fmt"
 	"math"
 	"strings"
 
@@ -10,27 +11,60 @@ import (
 	"gorm.io/gorm"
 )
 
-func applySorting(stmt *gorm.DB, allowedSorts []string, sort string) *gorm.DB {
+func applySorting(stmt *gorm.DB, allowedSorts []string, sort string) (*gorm.DB, error) {
 	col := sort
 	direction := " ASC"
+
+	if sort == "" {
+		col = allowedSorts[0]
+		return stmt.Order(col + direction), nil
+	}
 
 	if strings.HasPrefix(sort, "-") {
 		col = sort[1:]
 		direction = " DESC"
 	}
-
 	if !slices.Contains(allowedSorts, col) {
-		col = allowedSorts[0]
-		direction = " ASC"
+		return nil, fmt.Errorf("%w: column '%s' (allowed values: %s)",
+			errs.ErrInvalidSort, col, strings.Join(allowedSorts, ", "))
 	}
 
-	stmt = stmt.Order(col + direction)
-	return stmt
+	return stmt.Order(col + direction), nil
 }
 
-func GetWithPagination[T any](stmt *gorm.DB, req base.PaginationRequest, allowedSorts []string,
+func applyIncludes(stmt *gorm.DB, allowedIncludes []string, includes string) (*gorm.DB, error) {
+	for _, include := range strings.Split(includes, ",") {
+		include = strings.TrimSpace(include)
+		if include == "" {
+			continue
+		}
+
+		allowedValues := "none"
+		if len(allowedIncludes) > 0 {
+			allowedValues = strings.Join(allowedIncludes, ", ")
+		}
+		if !slices.Contains(allowedIncludes, include) {
+			return nil, fmt.Errorf("%w: column '%s' (allowed values: %s)",
+				errs.ErrInvalidInclude, include, allowedValues)
+		}
+		stmt = stmt.Preload(include)
+	}
+	return stmt, nil
+}
+
+func GetWithPagination[T any](
+	stmt *gorm.DB, req base.PaginationRequest,
+	allowedSorts []string, allowedIncludes []string,
 ) (data []T, paginationResp base.PaginationResponse, err error) {
-	stmt = applySorting(stmt, allowedSorts, req.Sort)
+	stmt, err = applySorting(stmt, allowedSorts, req.Sort)
+	if err != nil {
+		return nil, paginationResp, err
+	}
+
+	stmt, err = applyIncludes(stmt, allowedIncludes, req.Includes)
+	if err != nil {
+		return nil, paginationResp, err
+	}
 
 	if req.PerPage == 0 {
 		err = stmt.Find(&data).Error

@@ -14,7 +14,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/zetsux/gin-gorm-api-starter/core/entity"
 	"github.com/zetsux/gin-gorm-api-starter/core/helper/dto"
-	errs "github.com/zetsux/gin-gorm-api-starter/core/helper/errors"
 	"gorm.io/gorm"
 )
 
@@ -54,20 +53,12 @@ func TestUserService_ChangePicture(t *testing.T) {
 	tmpDir := setupTemporaryFileDir(t)
 	us, repo, _, ctx := setupUserServiceMock()
 
-	expected := entity.User{ID: uuid.New(), Name: "P", Email: "p@mail.test"}
-	repo.On("GetUserByPrimaryKey", ctx, (*gorm.DB)(nil), "email", "p@mail.test").Return(entity.User{}, errs.ErrUserNotFound).Once()
-	repo.On("CreateNewUser", ctx, (*gorm.DB)(nil), mock.AnythingOfType("entity.User")).Return(expected, nil)
-
-	created, err := us.CreateNewUser(ctx, dto.UserRegisterRequest{Name: "P", Email: "p@mail.test", Password: "secret"})
-	createdID := uuid.MustParse(created.ID)
-	createdUser := entity.User{ID: createdID, Name: created.Name, Email: created.Email}
-	require.NoError(t, err)
-
+	expectedUser := entity.User{ID: uuid.New(), Name: "P", Email: "p@mail.test"}
 	fh := buildFileHeader(t, "picture", "pic.txt", []byte("hello"))
-	repo.On("GetUserByPrimaryKey", ctx, (*gorm.DB)(nil), "id", createdUser.ID.String()).Return(createdUser, nil).Once()
+	repo.On("GetUserByPrimaryKey", ctx, (*gorm.DB)(nil), "id", expectedUser.ID.String()).Return(expectedUser, nil).Once()
 	repo.On("UpdateUser", ctx, (*gorm.DB)(nil), mock.AnythingOfType("entity.User")).Return(nil)
 
-	updated, err := us.ChangePicture(ctx, dto.UserChangePictureRequest{ID: created.ID, Picture: fh})
+	updated, err := us.ChangePicture(ctx, dto.UserChangePictureRequest{ID: expectedUser.ID.String(), Picture: fh})
 	require.NoError(t, err)
 	require.NotEmpty(t, updated.Picture)
 	expectedFilePath := filepath.Join(tmpDir, "files", updated.Picture)

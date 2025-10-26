@@ -33,16 +33,17 @@ func applySorting(stmt *gorm.DB, allowedSorts []string, sort string) (*gorm.DB, 
 }
 
 func applyIncludes(stmt *gorm.DB, allowedIncludes []string, includes string) (*gorm.DB, error) {
+	allowedValues := "none"
+	if len(allowedIncludes) > 0 {
+		allowedValues = strings.Join(allowedIncludes, ", ")
+	}
+
 	for _, include := range strings.Split(includes, ",") {
 		include = strings.TrimSpace(include)
 		if include == "" {
 			continue
 		}
 
-		allowedValues := "none"
-		if len(allowedIncludes) > 0 {
-			allowedValues = strings.Join(allowedIncludes, ", ")
-		}
 		if !slices.Contains(allowedIncludes, include) {
 			return nil, fmt.Errorf("%w: column '%s' (allowed values: %s)",
 				errs.ErrInvalidInclude, include, allowedValues)

@@ -41,16 +41,9 @@ func GetByID[T any](ctx context.Context, tx *gorm.DB, defaultDB *gorm.DB,
 }
 
 func Update[T any](ctx context.Context, tx *gorm.DB, defaultDB *gorm.DB, entity *T) error {
-	if err := useDB(tx, defaultDB).WithContext(ctx).Debug().Updates(entity).Error; err != nil {
-		return err
-	}
-	return nil
+	return useDB(tx, defaultDB).WithContext(ctx).Debug().Updates(entity).Error
 }
 
 func Delete[T any](ctx context.Context, tx *gorm.DB, defaultDB *gorm.DB, id string) error {
-	obj := new(T)
-	if err := useDB(tx, defaultDB).WithContext(ctx).Debug().Delete(obj, &id).Error; err != nil {
-		return err
-	}
-	return nil
+	return useDB(tx, defaultDB).WithContext(ctx).Debug().Delete(new(T), &id).Error
 }

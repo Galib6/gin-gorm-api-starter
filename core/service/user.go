@@ -155,10 +155,6 @@ func (sv *userService) UpdateUserByID(ctx context.Context,
 		return dto.UserResponse{}, err
 	}
 
-	if reflect.DeepEqual(user, entity.User{}) {
-		return dto.UserResponse{}, errs.ErrUserNotFound
-	}
-
 	if req.Email != "" && req.Email != user.Email {
 		us, err := sv.userRepository.GetUserByPrimaryKey(ctx, nil, constant.DBAttrEmail, req.Email)
 		if err != nil && err != errs.ErrUserNotFound {
@@ -191,13 +187,9 @@ func (sv *userService) UpdateUserByID(ctx context.Context,
 }
 
 func (sv *userService) DeleteUserByID(ctx context.Context, id string) error {
-	userCheck, err := sv.userRepository.GetUserByPrimaryKey(ctx, nil, constant.DBAttrID, id)
+	_, err := sv.userRepository.GetUserByPrimaryKey(ctx, nil, constant.DBAttrID, id)
 	if err != nil {
 		return err
-	}
-
-	if reflect.DeepEqual(userCheck, entity.User{}) {
-		return errs.ErrUserNotFound
 	}
 
 	err = sv.userRepository.DeleteUserByID(ctx, nil, id)
@@ -212,10 +204,6 @@ func (sv *userService) ChangePicture(ctx context.Context,
 	user, err := sv.userRepository.GetUserByPrimaryKey(ctx, nil, constant.DBAttrID, req.ID)
 	if err != nil {
 		return dto.UserResponse{}, err
-	}
-
-	if reflect.DeepEqual(user, entity.User{}) {
-		return dto.UserResponse{}, errs.ErrUserNotFound
 	}
 
 	if user.Picture != nil && *user.Picture != "" {
@@ -250,10 +238,6 @@ func (sv *userService) DeletePicture(ctx context.Context, userID string) error {
 	user, err := sv.userRepository.GetUserByPrimaryKey(ctx, nil, constant.DBAttrID, userID)
 	if err != nil {
 		return err
-	}
-
-	if reflect.DeepEqual(user, entity.User{}) {
-		return errs.ErrUserNotFound
 	}
 
 	if user.Picture == nil || *user.Picture == "" {

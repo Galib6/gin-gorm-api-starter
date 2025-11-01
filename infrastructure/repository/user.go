@@ -22,23 +22,16 @@ func (rp *userRepository) DB() *gorm.DB {
 	return rp.db
 }
 
-func (rp *userRepository) CreateNewUser(ctx context.Context, tx *gorm.DB, user entity.User) (entity.User, error) {
-	if tx == nil {
-		tx = rp.db
-	}
-
-	if err := tx.WithContext(ctx).Debug().Create(&user).Error; err != nil {
-		return entity.User{}, err
-	}
-	return user, nil
+func (ur *userRepository) CreateNewUser(ctx context.Context, tx *gorm.DB, user entity.User) (entity.User, error) {
+	return Create(ctx, tx, ur.DB(), user)
 }
 
-func (rp *userRepository) GetUserByPrimaryKey(ctx context.Context,
+func (ur *userRepository) GetUserByPrimaryKey(ctx context.Context,
 	tx *gorm.DB, key string, val string) (entity.User, error) {
 	var user entity.User
 
 	if tx == nil {
-		tx = rp.db
+		tx = ur.db
 	}
 
 	err := tx.WithContext(ctx).Debug().Where(key+" = $1", val).Take(&user).Error
@@ -51,24 +44,10 @@ func (rp *userRepository) GetUserByPrimaryKey(ctx context.Context,
 	return user, nil
 }
 
-func (rp *userRepository) UpdateUser(ctx context.Context, tx *gorm.DB, user entity.User) error {
-	if tx == nil {
-		tx = rp.db
-	}
-
-	if err := tx.WithContext(ctx).Debug().Updates(&user).Error; err != nil {
-		return err
-	}
-	return nil
+func (ur *userRepository) UpdateUser(ctx context.Context, tx *gorm.DB, user entity.User) error {
+	return Update(ctx, tx, ur.DB(), &user)
 }
 
-func (rp *userRepository) DeleteUserByID(ctx context.Context, tx *gorm.DB, id string) error {
-	if tx == nil {
-		tx = rp.db
-	}
-
-	if err := tx.WithContext(ctx).Debug().Delete(&entity.User{}, &id).Error; err != nil {
-		return err
-	}
-	return nil
+func (ur *userRepository) DeleteUserByID(ctx context.Context, tx *gorm.DB, id string) error {
+	return Delete[entity.User](ctx, tx, ur.DB(), id)
 }

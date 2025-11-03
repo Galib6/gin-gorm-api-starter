@@ -4,8 +4,8 @@ const (
 	MsgUserRegisterSuccess = "User register successful"
 	MsgUserRegisterFailed  = "Failed to register user"
 
-	MsgUserLoginSuccess    = "User login successful"
-	MsgUserLoginFailed     = "Failed to process user login"
+	MsgUserLoginSuccess    = "User log in successful"
+	MsgUserLoginFailed     = "Failed to log in user"
 	MsgUserWrongCredential = "Entered credentials invalid"
 
 	MsgUsersFetchSuccess = "Users fetched successfully"

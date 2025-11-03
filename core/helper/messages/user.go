@@ -2,10 +2,10 @@ package messages
 
 const (
 	MsgUserRegisterSuccess = "User register successful"
-	MsgUserRegisterFailed  = "Failed to process user register request"
+	MsgUserRegisterFailed  = "Failed to register user"
 
 	MsgUserLoginSuccess    = "User login successful"
-	MsgUserLoginFailed     = "Failed to process user login request"
+	MsgUserLoginFailed     = "Failed to process user login"
 	MsgUserWrongCredential = "Entered credentials invalid"
 
 	MsgUsersFetchSuccess = "Users fetched successfully"
@@ -14,14 +14,14 @@ const (
 	MsgUserFetchFailed   = "Failed to fetch user"
 
 	MsgUserUpdateSuccess = "User update successful"
-	MsgUserUpdateFailed  = "Failed to process user update request"
+	MsgUserUpdateFailed  = "Failed to update user"
 
 	MsgUserDeleteSuccess = "User delete successful"
-	MsgUserDeleteFailed  = "Failed to process user delete request"
+	MsgUserDeleteFailed  = "Failed to delete user"
 
 	MsgUserPictureUpdateSuccess = "User picture update successful"
-	MsgUserPictureUpdateFailed  = "Failed to process user picture update request"
+	MsgUserPictureUpdateFailed  = "Failed to update user picture"
 
 	MsgUserPictureDeleteSuccess = "User picture delete successful"
-	MsgUserPictureDeleteFailed  = "Failed to process user picture delete request"
+	MsgUserPictureDeleteFailed  = "Failed to delete user picture"
 )

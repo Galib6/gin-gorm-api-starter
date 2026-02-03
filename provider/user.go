@@ -18,6 +18,11 @@ func SetupUserDependencies(injector *do.Injector) {
 		return repository.NewUserRepository(db), nil
 	})
 
+	do.Provide(injector, func(i *do.Injector) (repositoryiface.TxRepository, error) {
+		db := do.MustInvokeNamed[*gorm.DB](i, constant.DBInjectorKey)
+		return repository.NewTxRepository(db), nil
+	})
+
 	do.Provide(injector, func(i *do.Injector) (queryiface.UserQuery, error) {
 		db := do.MustInvokeNamed[*gorm.DB](i, constant.DBInjectorKey)
 		return query.NewUserQuery(db), nil
@@ -26,7 +31,8 @@ func SetupUserDependencies(injector *do.Injector) {
 	do.Provide(injector, func(i *do.Injector) (service.UserService, error) {
 		userR := do.MustInvoke[repositoryiface.UserRepository](i)
 		userQ := do.MustInvoke[queryiface.UserQuery](i)
-		return service.NewUserService(userR, userQ), nil
+		txR := do.MustInvoke[repositoryiface.TxRepository](i)
+		return service.NewUserService(userR, userQ, txR), nil
 	})
 
 	do.Provide(injector, func(i *do.Injector) (controller.UserController, error) {

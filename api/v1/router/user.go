@@ -21,6 +21,7 @@ func UserRouter(router *gin.Engine, injector *do.Injector) {
 		userRoutes.GET("", middleware.Authenticate(jwtS), middleware.Authorize(), userC.GetAllUsers)
 		userRoutes.PATCH("/:user_id", middleware.Authenticate(jwtS), middleware.Authorize(), userC.UpdateUserByID)
 		userRoutes.DELETE("/:user_id", middleware.Authenticate(jwtS), middleware.Authorize(), userC.DeleteUserByID)
+		userRoutes.POST("/maintenance", middleware.Authenticate(jwtS), middleware.Authorize(), userC.RunUserMaintenance)
 
 		// user routes
 		userRoutes.GET("/me", middleware.Authenticate(jwtS), userC.GetMe)

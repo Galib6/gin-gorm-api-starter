@@ -28,6 +28,9 @@ type UserController interface {
 	DeleteUserByID(ctx *gin.Context)
 	ChangePicture(ctx *gin.Context)
 	DeletePicture(ctx *gin.Context)
+	// RunUserMaintenance is an example of a large, complex operation that
+	// applies many business rules and DB changes in one call.
+	RunUserMaintenance(ctx *gin.Context)
 }
 
 func NewUserController(userS service.UserService, jwtS service.JWTService) UserController {
@@ -126,4 +129,29 @@ func (uc *userController) DeletePicture(ctx *gin.Context) {
 	id := ctx.Param("user_id")
 	HandleDelete(ctx, id, uc.userService.DeletePicture,
 		messages.MsgUserPictureDeleteSuccess, messages.MsgUserPictureDeleteFailed)
+}
+
+// RunUserMaintenance demonstrates how to call a "large" service function from
+// the controller. It binds a complex request DTO and returns a summary
+// response.
+func (uc *userController) RunUserMaintenance(ctx *gin.Context) {
+	var req dto.UserMaintenanceRequest
+	if err := ctx.ShouldBind(&req); err != nil {
+		msg := base.GetValidationErrorMessage(err, req, messages.MsgUserUpdateFailed)
+		_ = ctx.Error(base.NewAppError(http.StatusBadRequest, msg, err))
+		return
+	}
+
+	resp, err := uc.userService.RunUserMaintenance(ctx, req)
+	if err != nil {
+		_ = ctx.Error(base.NewAppError(http.StatusInternalServerError,
+			messages.MsgUserUpdateFailed, err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, base.CreateSuccessResponse(
+		messages.MsgUserUpdateSuccess,
+		http.StatusOK,
+		resp,
+	))
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"reflect"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/zetsux/gin-gorm-api-starter/core/entity"
@@ -19,6 +20,7 @@ import (
 type userService struct {
 	userRepository repositoryiface.UserRepository
 	userQuery      queryiface.UserQuery
+	txRepository   repositoryiface.TxRepository
 }
 
 type UserService interface {
@@ -31,10 +33,20 @@ type UserService interface {
 	DeleteUserByID(ctx context.Context, id string) error
 	ChangePicture(ctx context.Context, req dto.UserChangePictureRequest) (dto.UserResponse, error)
 	DeletePicture(ctx context.Context, userID string) error
+	// RunUserMaintenance demonstrates a complex, highly-customizable operation
+	// that can apply multiple business rules and database changes in one
+	// transactional flow.
+	RunUserMaintenance(ctx context.Context, req dto.UserMaintenanceRequest) (dto.UserMaintenanceResponse, error)
 }
 
-func NewUserService(userR repositoryiface.UserRepository, userQ queryiface.UserQuery) UserService {
-	return &userService{userRepository: userR, userQuery: userQ}
+func NewUserService(userR repositoryiface.UserRepository, userQ queryiface.UserQuery,
+	txR repositoryiface.TxRepository,
+) UserService {
+	return &userService{
+		userRepository: userR,
+		userQuery:      userQ,
+		txRepository:   txR,
+	}
 }
 
 func (sv *userService) VerifyLogin(ctx context.Context, email string, password string) bool {
@@ -260,4 +272,115 @@ func (sv *userService) DeletePicture(ctx context.Context, userID string) error {
 	}
 
 	return nil
+}
+
+// RunUserMaintenance is a "large" example function that shows how to:
+//   - run complex, customizable queries via the query layer
+//   - apply multiple business rules
+//   - perform multiple updates inside a single transaction
+func (sv *userService) RunUserMaintenance(
+	ctx context.Context,
+	req dto.UserMaintenanceRequest,
+) (resp dto.UserMaintenanceResponse, err error) {
+	// 1. Normalize input / defaults
+	if req.PerPage <= 0 || req.PerPage > 1000 {
+		req.PerPage = 100
+	}
+	if req.InactiveDays < 0 {
+		req.InactiveDays = 0
+	}
+
+	// 2. Build the underlying GetAllUsers request from the embedded struct
+	getReq := dto.UserGetsRequest{
+		ID:     req.ID,
+		Role:   req.Role,
+		Search: req.Search,
+		PaginationRequest: base.PaginationRequest{
+			Sort:     req.Sort,
+			Includes: req.Includes,
+			Page:     req.Page,
+			PerPage:  req.PerPage,
+		},
+	}
+
+	// 3. Execute complex, filterable query via query layer
+	users, pageResp, err := sv.userQuery.GetAllUsers(ctx, getReq)
+	if err != nil {
+		return dto.UserMaintenanceResponse{}, err
+	}
+	resp.PaginationResponse = pageResp
+	resp.TotalSelected = len(users)
+	if len(users) == 0 {
+		return resp, nil
+	}
+
+	// 4. Start transaction for all subsequent updates
+	tx, err := sv.txRepository.BeginTx(ctx)
+	if err != nil {
+		return dto.UserMaintenanceResponse{}, err
+	}
+	defer func() {
+		sv.txRepository.CommitOrRollbackTx(ctx, tx, err)
+	}()
+
+	now := time.Now()
+
+	for _, user := range users {
+		// Optional inactivity filter based on UpdatedAt
+		if req.InactiveDays > 0 {
+			inactiveForDays := int(now.Sub(user.UpdatedAt).Hours() / 24)
+			if inactiveForDays < req.InactiveDays {
+				// Skip users that are not inactive long enough
+				continue
+			}
+		}
+
+		result := dto.UserMaintenanceResult{
+			UserID:  user.ID.String(),
+			OldRole: user.Role,
+		}
+
+		// Construct a minimal edit model
+		userEdit := entity.User{
+			ID: user.ID,
+		}
+
+		// Business rule: change role if requested
+		if req.NewRole != "" && user.Role != req.NewRole {
+			userEdit.Role = req.NewRole
+			result.NewRole = req.NewRole
+			resp.RoleChangedCount++
+		} else {
+			userEdit.Role = user.Role
+		}
+
+		// Business rule: clear picture if requested
+		if req.ClearPicture && user.Picture != nil && *user.Picture != "" {
+			// Remove file from storage
+			if errDel := util.DeleteFile(*user.Picture); errDel != nil {
+				err = errDel
+				return resp, err
+			}
+			empty := ""
+			userEdit.Picture = &empty
+			result.PictureCleared = true
+			resp.PictureClearedCount++
+		} else {
+			userEdit.Picture = user.Picture
+		}
+
+		// If nothing changed for this user, skip DB call
+		if result.NewRole == "" && !result.PictureCleared {
+			continue
+		}
+
+		if err = sv.userRepository.UpdateUser(ctx, tx, userEdit); err != nil {
+			return resp, err
+		}
+
+		resp.Details = append(resp.Details, result)
+		resp.TotalProcessed++
+	}
+
+	return resp, nil
 }

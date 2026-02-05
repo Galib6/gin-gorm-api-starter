@@ -1,9 +1,10 @@
 package router
 
 import (
+	"myapp/api/v1/controller"
+
 	"github.com/gin-gonic/gin"
 	"github.com/samber/do"
-	"github.com/zetsux/gin-gorm-api-starter/api/v1/controller"
 )
 
 func FileRouter(route *gin.Engine, injector *do.Injector) {

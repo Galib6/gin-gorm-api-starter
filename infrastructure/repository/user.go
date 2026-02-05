@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	"github.com/zetsux/gin-gorm-api-starter/core/entity"
-	errs "github.com/zetsux/gin-gorm-api-starter/core/helper/errors"
+	"myapp/core/entity"
+	errs "myapp/core/helper/errors"
 
 	"gorm.io/gorm"
 )

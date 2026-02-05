@@ -8,4 +8,5 @@ import (
 func InitRoutes(server *gin.Engine, injector *do.Injector) {
 	UserRouter(server, injector)
 	FileRouter(server, injector)
+	ProductRouter(server, injector)
 }

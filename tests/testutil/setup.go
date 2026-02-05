@@ -3,14 +3,15 @@ package testutil
 import (
 	"testing"
 
+	"myapp/api/v1/router"
+	repositoryiface "myapp/core/interface/repository"
+	"myapp/core/service"
+	"myapp/provider"
+	"myapp/support/constant"
+	"myapp/support/middleware"
+
 	"github.com/gin-gonic/gin"
 	"github.com/samber/do"
-	"github.com/zetsux/gin-gorm-api-starter/api/v1/router"
-	repositoryiface "github.com/zetsux/gin-gorm-api-starter/core/interface/repository"
-	"github.com/zetsux/gin-gorm-api-starter/core/service"
-	"github.com/zetsux/gin-gorm-api-starter/provider"
-	"github.com/zetsux/gin-gorm-api-starter/support/constant"
-	"github.com/zetsux/gin-gorm-api-starter/support/middleware"
 	"gorm.io/gorm"
 )
 

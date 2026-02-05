@@ -1,8 +1,9 @@
 package provider
 
 import (
+	"myapp/api/v1/controller"
+
 	"github.com/samber/do"
-	"github.com/zetsux/gin-gorm-api-starter/api/v1/controller"
 )
 
 func SetupFileDependencies(injector *do.Injector) {

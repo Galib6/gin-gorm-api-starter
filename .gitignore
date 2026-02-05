@@ -1,2 +1,10 @@
 .env
 files
+
+# Air hot reload
+tmp/
+build-errors.log
+
+# Binaries
+main
+*.exe

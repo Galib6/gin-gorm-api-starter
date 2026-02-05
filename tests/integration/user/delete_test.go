@@ -6,11 +6,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	errs "myapp/core/helper/errors"
+	"myapp/core/helper/messages"
+	"myapp/support/base"
+	"myapp/tests/testutil"
+
 	"github.com/stretchr/testify/require"
-	errs "github.com/zetsux/gin-gorm-api-starter/core/helper/errors"
-	"github.com/zetsux/gin-gorm-api-starter/core/helper/messages"
-	"github.com/zetsux/gin-gorm-api-starter/support/base"
-	"github.com/zetsux/gin-gorm-api-starter/tests/testutil"
 )
 
 // Test delete user endpoint

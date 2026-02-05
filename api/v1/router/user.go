@@ -1,10 +1,11 @@
 package router
 
 import (
+	"myapp/api/v1/controller"
+	"myapp/core/service"
+	"myapp/support/middleware"
+
 	"github.com/samber/do"
-	"github.com/zetsux/gin-gorm-api-starter/api/v1/controller"
-	"github.com/zetsux/gin-gorm-api-starter/core/service"
-	"github.com/zetsux/gin-gorm-api-starter/support/middleware"
 
 	"github.com/gin-gonic/gin"
 )

@@ -3,9 +3,9 @@ package queryiface
 import (
 	"context"
 
-	"github.com/zetsux/gin-gorm-api-starter/core/entity"
-	"github.com/zetsux/gin-gorm-api-starter/core/helper/dto"
-	"github.com/zetsux/gin-gorm-api-starter/support/base"
+	"myapp/core/entity"
+	"myapp/core/helper/dto"
+	"myapp/support/base"
 )
 
 type UserQuery interface {

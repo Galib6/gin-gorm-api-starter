@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/zetsux/gin-gorm-api-starter/core/helper/messages"
-	"github.com/zetsux/gin-gorm-api-starter/core/service"
-	"github.com/zetsux/gin-gorm-api-starter/support/base"
+	"myapp/core/helper/messages"
+	"myapp/core/service"
+	"myapp/support/base"
 
 	"github.com/gin-gonic/gin"
 )

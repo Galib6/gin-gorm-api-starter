@@ -2,7 +2,8 @@ package repository
 
 import (
 	"context"
-	"log"
+
+	"myapp/support/logger"
 
 	"gorm.io/gorm"
 )
@@ -29,15 +30,15 @@ func (rp txRepository) BeginTx(ctx context.Context) (*gorm.DB, error) {
 
 func (rp txRepository) CommitOrRollbackTx(ctx context.Context, tx *gorm.DB, err error) {
 	if err != nil {
-		log.Println("Error occurred: ", err)
+		logger.Error("Transaction error: %v", err)
 		tx.WithContext(ctx).Debug().Rollback()
 		return
 	}
 
 	err = tx.WithContext(ctx).Commit().Error
 	if err != nil {
-		log.Println("Commit failed: ", err)
+		logger.Error("Transaction commit failed: %v", err)
 		return
 	}
-	log.Println("Committed successfully")
+	logger.Debug("Transaction committed successfully")
 }

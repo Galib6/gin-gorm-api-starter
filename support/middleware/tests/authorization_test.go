@@ -5,10 +5,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"myapp/core/service"
+	"myapp/support/middleware"
+
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/require"
-	"github.com/zetsux/gin-gorm-api-starter/core/service"
-	"github.com/zetsux/gin-gorm-api-starter/support/middleware"
 )
 
 // --- Test Helpers ---

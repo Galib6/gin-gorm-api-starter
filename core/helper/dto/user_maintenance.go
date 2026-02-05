@@ -1,6 +1,6 @@
 package dto
 
-import "github.com/zetsux/gin-gorm-api-starter/support/base"
+import "myapp/support/base"
 
 // UserMaintenanceRequest represents a complex, highly customizable operation
 // over a filtered set of users. It embeds UserGetsRequest so callers can

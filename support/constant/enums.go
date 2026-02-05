@@ -6,4 +6,6 @@ const (
 
 	DBAttrID    = "id"
 	DBAttrEmail = "email"
+	DBAttrSKU   = "sku"
+	DBAttrName  = "name"
 )

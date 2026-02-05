@@ -5,8 +5,9 @@ import (
 	"net/http"
 	"reflect"
 
+	"myapp/support/base"
+
 	"github.com/gin-gonic/gin"
-	"github.com/zetsux/gin-gorm-api-starter/support/base"
 )
 
 func HandleCreate[T any, R any](

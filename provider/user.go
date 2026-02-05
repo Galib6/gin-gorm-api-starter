@@ -1,14 +1,15 @@
 package provider
 
 import (
+	"myapp/api/v1/controller"
+	queryiface "myapp/core/interface/query"
+	repositoryiface "myapp/core/interface/repository"
+	"myapp/core/service"
+	"myapp/infrastructure/query"
+	"myapp/infrastructure/repository"
+	"myapp/support/constant"
+
 	"github.com/samber/do"
-	"github.com/zetsux/gin-gorm-api-starter/api/v1/controller"
-	queryiface "github.com/zetsux/gin-gorm-api-starter/core/interface/query"
-	repositoryiface "github.com/zetsux/gin-gorm-api-starter/core/interface/repository"
-	"github.com/zetsux/gin-gorm-api-starter/core/service"
-	"github.com/zetsux/gin-gorm-api-starter/infrastructure/query"
-	"github.com/zetsux/gin-gorm-api-starter/infrastructure/repository"
-	"github.com/zetsux/gin-gorm-api-starter/support/constant"
 	"gorm.io/gorm"
 )
 
@@ -16,11 +17,6 @@ func SetupUserDependencies(injector *do.Injector) {
 	do.Provide(injector, func(i *do.Injector) (repositoryiface.UserRepository, error) {
 		db := do.MustInvokeNamed[*gorm.DB](i, constant.DBInjectorKey)
 		return repository.NewUserRepository(db), nil
-	})
-
-	do.Provide(injector, func(i *do.Injector) (repositoryiface.TxRepository, error) {
-		db := do.MustInvokeNamed[*gorm.DB](i, constant.DBInjectorKey)
-		return repository.NewTxRepository(db), nil
 	})
 
 	do.Provide(injector, func(i *do.Injector) (queryiface.UserQuery, error) {

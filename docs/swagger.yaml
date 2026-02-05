@@ -1,0 +1,856 @@
+basePath: /api/v1
+definitions:
+  base.PaginationResponse:
+    properties:
+      last_page:
+        type: integer
+      page:
+        type: integer
+      per_page:
+        type: integer
+      total:
+        type: integer
+    type: object
+  base.Response:
+    properties:
+      data: {}
+      error:
+        type: string
+      message:
+        type: string
+      meta:
+        $ref: '#/definitions/base.PaginationResponse'
+      status:
+        type: integer
+      success:
+        type: boolean
+    type: object
+  dto.CategoryCreateRequest:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  dto.CategoryProductStats:
+    properties:
+      avg_price:
+        type: number
+      category_id:
+        type: string
+      category_name:
+        type: string
+      max_price:
+        type: number
+      min_price:
+        type: number
+      product_count:
+        type: integer
+      total_stock:
+        type: integer
+    type: object
+  dto.CategoryResponse:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  dto.CategoryUpdateRequest:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  dto.ProductCreateRequest:
+    properties:
+      category_id:
+        type: string
+      description:
+        type: string
+      is_active:
+        type: boolean
+      name:
+        type: string
+      price:
+        type: number
+      sku:
+        type: string
+      stock:
+        minimum: 0
+        type: integer
+    required:
+    - name
+    - price
+    - sku
+    type: object
+  dto.ProductMaintenanceRequest:
+    properties:
+      filter[category_id]:
+        type: string
+      filter[id]:
+        type: string
+      filter[is_active]:
+        type: boolean
+      filter[max_price]:
+        type: number
+      filter[max_stock]:
+        type: integer
+      filter[min_price]:
+        description: Price range filters
+        type: number
+      filter[min_stock]:
+        description: Stock filters
+        type: integer
+      includes:
+        type: string
+      low_stock_threshold:
+        description: 'LowStockThreshold: mark products with stock below this as inactive'
+        type: integer
+      new_category_id:
+        description: 'NewCategoryID: move all matching products to this category'
+        type: string
+      page:
+        minimum: 1
+        type: integer
+      per_page:
+        minimum: 1
+        type: integer
+      price_adjustment:
+        description: 'PriceAdjustment: percentage to adjust prices (e.g., 10 = +10%,
+          -10 = -10%)'
+        type: number
+      search:
+        type: string
+      set_active:
+        description: 'SetActive: if not nil, set all matching products to this active
+          status'
+        type: boolean
+      sort:
+        type: string
+    type: object
+  dto.ProductMaintenanceResponse:
+    properties:
+      active_changed_count:
+        type: integer
+      category_changed_count:
+        type: integer
+      details:
+        items:
+          $ref: '#/definitions/dto.ProductMaintenanceResult'
+        type: array
+      last_page:
+        type: integer
+      page:
+        type: integer
+      per_page:
+        type: integer
+      price_changed_count:
+        type: integer
+      total:
+        type: integer
+      total_processed:
+        type: integer
+      total_selected:
+        type: integer
+    type: object
+  dto.ProductMaintenanceResult:
+    properties:
+      active_changed:
+        type: boolean
+      category_changed:
+        type: boolean
+      new_price:
+        type: number
+      old_price:
+        type: number
+      product_id:
+        type: string
+      product_name:
+        type: string
+    type: object
+  dto.ProductResponse:
+    properties:
+      category:
+        $ref: '#/definitions/dto.CategoryResponse'
+      category_id:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      image:
+        type: string
+      is_active:
+        type: boolean
+      name:
+        type: string
+      price:
+        type: number
+      sku:
+        type: string
+      stock:
+        type: integer
+    type: object
+  dto.ProductStockUpdateRequest:
+    properties:
+      id:
+        type: string
+      quantity:
+        type: integer
+    required:
+    - quantity
+    type: object
+  dto.ProductUpdateRequest:
+    properties:
+      category_id:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      is_active:
+        type: boolean
+      name:
+        type: string
+      price:
+        type: number
+      sku:
+        type: string
+      stock:
+        minimum: 0
+        type: integer
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: A starter API project with Gin and GORM featuring user management and
+    product catalog.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Gin GORM API Starter
+  version: "1.0"
+paths:
+  /categories:
+    get:
+      consumes:
+      - application/json
+      description: Get all categories with optional filtering and pagination
+      parameters:
+      - description: Filter by category ID
+        in: query
+        name: filter[id]
+        type: string
+      - description: Search in name and description
+        in: query
+        name: search
+        type: string
+      - description: Sort field (prefix with - for desc)
+        in: query
+        name: sort
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: per_page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.CategoryResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.Response'
+      summary: Get all categories
+      tags:
+      - Categories
+    post:
+      consumes:
+      - application/json
+      description: Create a new product category
+      parameters:
+      - description: Category details
+        in: body
+        name: category
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CategoryCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.CategoryResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.Response'
+      security:
+      - BearerAuth: []
+      summary: Create a new category
+      tags:
+      - Categories
+  /categories/{category_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a category by ID (fails if category has products)
+      parameters:
+      - description: Category ID
+        in: path
+        name: category_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/base.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.Response'
+      security:
+      - BearerAuth: []
+      summary: Delete a category
+      tags:
+      - Categories
+    get:
+      consumes:
+      - application/json
+      description: Get a single category by its ID
+      parameters:
+      - description: Category ID
+        in: path
+        name: category_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.CategoryResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.Response'
+      summary: Get category by ID
+      tags:
+      - Categories
+    patch:
+      consumes:
+      - application/json
+      description: Update category details by ID
+      parameters:
+      - description: Category ID
+        in: path
+        name: category_id
+        required: true
+        type: string
+      - description: Category update details
+        in: body
+        name: category
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CategoryUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.CategoryResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.Response'
+      security:
+      - BearerAuth: []
+      summary: Update a category
+      tags:
+      - Categories
+  /products:
+    get:
+      consumes:
+      - application/json
+      description: Get all products with filtering, sorting, and pagination
+      parameters:
+      - description: Filter by product ID
+        in: query
+        name: filter[id]
+        type: string
+      - description: Filter by category ID
+        in: query
+        name: filter[category_id]
+        type: string
+      - description: Filter by active status
+        in: query
+        name: filter[is_active]
+        type: boolean
+      - description: Filter by minimum price
+        in: query
+        name: filter[min_price]
+        type: number
+      - description: Filter by maximum price
+        in: query
+        name: filter[max_price]
+        type: number
+      - description: Filter by minimum stock
+        in: query
+        name: filter[min_stock]
+        type: integer
+      - description: Filter by maximum stock
+        in: query
+        name: filter[max_stock]
+        type: integer
+      - description: Search in name, description, SKU
+        in: query
+        name: search
+        type: string
+      - description: Sort field (prefix with - for desc)
+        in: query
+        name: sort
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: per_page
+        type: integer
+      - description: Include relations (e.g., Category)
+        in: query
+        name: includes
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.ProductResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.Response'
+      summary: Get all products
+      tags:
+      - Products
+    post:
+      consumes:
+      - application/json
+      description: Create a new product with the provided details
+      parameters:
+      - description: Product details
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ProductCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ProductResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.Response'
+      security:
+      - BearerAuth: []
+      summary: Create a new product
+      tags:
+      - Products
+  /products/{product_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a product by ID
+      parameters:
+      - description: Product ID
+        in: path
+        name: product_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/base.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.Response'
+      security:
+      - BearerAuth: []
+      summary: Delete a product
+      tags:
+      - Products
+    get:
+      consumes:
+      - application/json
+      description: Get a single product by its ID
+      parameters:
+      - description: Product ID
+        in: path
+        name: product_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ProductResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.Response'
+      summary: Get product by ID
+      tags:
+      - Products
+    patch:
+      consumes:
+      - application/json
+      description: Update product details by ID
+      parameters:
+      - description: Product ID
+        in: path
+        name: product_id
+        required: true
+        type: string
+      - description: Product update details
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ProductUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ProductResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.Response'
+      security:
+      - BearerAuth: []
+      summary: Update a product
+      tags:
+      - Products
+  /products/{product_id}/image:
+    delete:
+      consumes:
+      - application/json
+      description: Delete the image of a product
+      parameters:
+      - description: Product ID
+        in: path
+        name: product_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/base.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.Response'
+      security:
+      - BearerAuth: []
+      summary: Delete product image
+      tags:
+      - Products
+    patch:
+      consumes:
+      - multipart/form-data
+      description: Upload or change product image
+      parameters:
+      - description: Product ID
+        in: path
+        name: product_id
+        required: true
+        type: string
+      - description: Product image
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ProductResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.Response'
+      security:
+      - BearerAuth: []
+      summary: Upload product image
+      tags:
+      - Products
+  /products/{product_id}/stock:
+    patch:
+      consumes:
+      - application/json
+      description: Add or subtract stock quantity
+      parameters:
+      - description: Product ID
+        in: path
+        name: product_id
+        required: true
+        type: string
+      - description: Stock update (positive to add, negative to subtract)
+        in: body
+        name: stock
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ProductStockUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ProductResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.Response'
+      security:
+      - BearerAuth: []
+      summary: Update product stock
+      tags:
+      - Products
+  /products/low-stock:
+    get:
+      consumes:
+      - application/json
+      description: Get products with stock below the specified threshold
+      parameters:
+      - description: 'Stock threshold (default: 10)'
+        in: query
+        name: threshold
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.ProductResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.Response'
+      summary: Get low stock products
+      tags:
+      - Products
+  /products/maintenance:
+    post:
+      consumes:
+      - application/json
+      description: Batch operation to update multiple products based on filters
+      parameters:
+      - description: Maintenance parameters
+        in: body
+        name: maintenance
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ProductMaintenanceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ProductMaintenanceResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/base.Response'
+      security:
+      - BearerAuth: []
+      summary: Run product maintenance
+      tags:
+      - Products
+  /products/price-range:
+    get:
+      consumes:
+      - application/json
+      description: Get all products within a specific price range
+      parameters:
+      - description: Minimum price
+        in: query
+        name: min_price
+        required: true
+        type: number
+      - description: Maximum price
+        in: query
+        name: max_price
+        required: true
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.ProductResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.Response'
+      summary: Get products by price range
+      tags:
+      - Products
+  /products/stats/by-category:
+    get:
+      consumes:
+      - application/json
+      description: Get aggregated product statistics grouped by category
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/base.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.CategoryProductStats'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/base.Response'
+      summary: Get product statistics by category
+      tags:
+      - Products
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

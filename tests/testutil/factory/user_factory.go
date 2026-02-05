@@ -4,15 +4,16 @@ import (
 	"context"
 	"testing"
 
+	"myapp/core/entity"
+	queryiface "myapp/core/interface/query"
+	repositoryiface "myapp/core/interface/repository"
+	"myapp/core/service"
+	"myapp/infrastructure/query"
+	"myapp/infrastructure/repository"
+	"myapp/support/constant"
+
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
-	"github.com/zetsux/gin-gorm-api-starter/core/entity"
-	queryiface "github.com/zetsux/gin-gorm-api-starter/core/interface/query"
-	repositoryiface "github.com/zetsux/gin-gorm-api-starter/core/interface/repository"
-	"github.com/zetsux/gin-gorm-api-starter/core/service"
-	"github.com/zetsux/gin-gorm-api-starter/infrastructure/query"
-	"github.com/zetsux/gin-gorm-api-starter/infrastructure/repository"
-	"github.com/zetsux/gin-gorm-api-starter/support/constant"
 
 	"gorm.io/gorm"
 )
@@ -31,7 +32,8 @@ func NewUserService(t *testing.T, db *gorm.DB) service.UserService {
 	t.Helper()
 	ur := NewUserRepository(t, db)
 	uq := NewUserQuery(t, db)
-	return service.NewUserService(ur, uq)
+	txr := repository.NewTxRepository(db)
+	return service.NewUserService(ur, uq, txr)
 }
 
 func SeedUsers(t *testing.T, ur repositoryiface.UserRepository, n int) []entity.User {

@@ -3,7 +3,7 @@ package dto
 import (
 	"mime/multipart"
 
-	"github.com/zetsux/gin-gorm-api-starter/support/base"
+	"myapp/support/base"
 )
 
 type (

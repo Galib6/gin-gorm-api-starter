@@ -7,8 +7,9 @@ import (
 	"path/filepath"
 	"testing"
 
+	"myapp/core/entity"
+
 	embeddedpostgres "github.com/fergusstrange/embedded-postgres"
-	"github.com/zetsux/gin-gorm-api-starter/core/entity"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )

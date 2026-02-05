@@ -3,8 +3,9 @@ package database
 import (
 	"fmt"
 
-	"github.com/zetsux/gin-gorm-api-starter/core/entity"
-	"github.com/zetsux/gin-gorm-api-starter/database/seeder"
+	"myapp/core/entity"
+	"myapp/database/seeder"
+
 	"gorm.io/gorm"
 )
 
@@ -16,6 +17,8 @@ func DBMigrate(db *gorm.DB) {
 
 	err := db.AutoMigrate(
 		entity.User{},
+		entity.Category{},
+		entity.Product{},
 	)
 
 	if err != nil {
@@ -27,6 +30,11 @@ func DBMigrate(db *gorm.DB) {
 func DBSeed(db *gorm.DB) {
 	if err := seeder.UserSeeder(db); err != nil {
 		fmt.Println("Failed to seed users: ", err)
+		panic(err)
+	}
+
+	if err := seeder.ProductSeeder(db); err != nil {
+		fmt.Println("Failed to seed products: ", err)
 		panic(err)
 	}
 }

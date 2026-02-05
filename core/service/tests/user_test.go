@@ -4,15 +4,16 @@ import (
 	"context"
 	"testing"
 
+	"myapp/core/entity"
+	"myapp/core/helper/dto"
+	errs "myapp/core/helper/errors"
+	"myapp/core/service"
+	"myapp/support/base"
+	"myapp/support/util"
+
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	"github.com/zetsux/gin-gorm-api-starter/core/entity"
-	"github.com/zetsux/gin-gorm-api-starter/core/helper/dto"
-	errs "github.com/zetsux/gin-gorm-api-starter/core/helper/errors"
-	"github.com/zetsux/gin-gorm-api-starter/core/service"
-	"github.com/zetsux/gin-gorm-api-starter/support/base"
-	"github.com/zetsux/gin-gorm-api-starter/support/util"
 	"gorm.io/gorm"
 )
 
@@ -64,7 +65,12 @@ type MockTxRepository struct {
 	mock.Mock
 }
 
-func (m *MockTxRepository) Begin() *gorm.DB {
+func (m *MockTxRepository) BeginTx(ctx context.Context) (*gorm.DB, error) {
+	args := m.Called(ctx)
+	return args.Get(0).(*gorm.DB), args.Error(1)
+}
+
+func (m *MockTxRepository) DB() *gorm.DB {
 	args := m.Called()
 	return args.Get(0).(*gorm.DB)
 }
@@ -79,12 +85,17 @@ func (m *MockTxRepository) Rollback(tx *gorm.DB) error {
 	return args.Error(0)
 }
 
+func (m *MockTxRepository) CommitOrRollbackTx(ctx context.Context, tx *gorm.DB, err error) {
+	m.Called(ctx, tx, err)
+}
+
 // --- Test Helpers ---
 
 func setupUserServiceMock() (service.UserService, *MockUserRepository, *MockUserQuery, context.Context) {
 	repo := new(MockUserRepository)
 	query := new(MockUserQuery)
-	us := service.NewUserService(repo, query)
+	tx := new(MockTxRepository)
+	us := service.NewUserService(repo, query, tx)
 	ctx := context.Background()
 
 	return us, repo, query, ctx

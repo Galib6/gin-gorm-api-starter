@@ -1,12 +1,13 @@
 package provider
 
 import (
+	"myapp/config"
+	repositoryiface "myapp/core/interface/repository"
+	"myapp/core/service"
+	"myapp/infrastructure/repository"
+	"myapp/support/constant"
+
 	"github.com/samber/do"
-	"github.com/zetsux/gin-gorm-api-starter/config"
-	repositoryiface "github.com/zetsux/gin-gorm-api-starter/core/interface/repository"
-	"github.com/zetsux/gin-gorm-api-starter/core/service"
-	"github.com/zetsux/gin-gorm-api-starter/infrastructure/repository"
-	"github.com/zetsux/gin-gorm-api-starter/support/constant"
 	"gorm.io/gorm"
 )
 
@@ -29,4 +30,5 @@ func SetupDependencies(injector *do.Injector) {
 
 	SetupUserDependencies(injector)
 	SetupFileDependencies(injector)
+	SetupProductDependencies(injector)
 }

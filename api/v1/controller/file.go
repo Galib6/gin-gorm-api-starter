@@ -5,9 +5,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/zetsux/gin-gorm-api-starter/core/helper/messages"
-	"github.com/zetsux/gin-gorm-api-starter/support/base"
-	"github.com/zetsux/gin-gorm-api-starter/support/constant"
+	"myapp/core/helper/messages"
+	"myapp/support/base"
+	"myapp/support/constant"
 
 	"github.com/gin-gonic/gin"
 )

@@ -4,10 +4,11 @@ import (
 	"net/http"
 	"slices"
 
+	"myapp/core/helper/messages"
+	"myapp/support/base"
+	"myapp/support/constant"
+
 	"github.com/gin-gonic/gin"
-	"github.com/zetsux/gin-gorm-api-starter/core/helper/messages"
-	"github.com/zetsux/gin-gorm-api-starter/support/base"
-	"github.com/zetsux/gin-gorm-api-starter/support/constant"
 )
 
 func Authorize(roles ...string) gin.HandlerFunc {

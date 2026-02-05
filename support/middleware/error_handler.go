@@ -3,8 +3,10 @@ package middleware
 import (
 	"net/http"
 
+	"myapp/support/base"
+	"myapp/support/logger"
+
 	"github.com/gin-gonic/gin"
-	"github.com/zetsux/gin-gorm-api-starter/support/base"
 )
 
 func ErrorHandler() gin.HandlerFunc {
@@ -27,6 +29,13 @@ func ErrorHandler() gin.HandlerFunc {
 				}
 			} else {
 				errMsg = err.Error()
+			}
+
+			// Log the error based on status code
+			if statusCode >= 500 {
+				logger.Error("[%s %s] %d - %s: %s", c.Request.Method, c.Request.URL.Path, statusCode, message, errMsg)
+			} else if statusCode >= 400 {
+				logger.Warn("[%s %s] %d - %s: %s", c.Request.Method, c.Request.URL.Path, statusCode, message, errMsg)
 			}
 
 			c.AbortWithStatusJSON(statusCode, base.CreateFailResponse(

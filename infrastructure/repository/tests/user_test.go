@@ -4,14 +4,15 @@ import (
 	"context"
 	"testing"
 
+	"myapp/core/entity"
+	repositoryiface "myapp/core/interface/repository"
+	"myapp/infrastructure/repository"
+	"myapp/support/constant"
+	support "myapp/tests/testutil"
+	"myapp/tests/testutil/factory"
+
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
-	"github.com/zetsux/gin-gorm-api-starter/core/entity"
-	repositoryiface "github.com/zetsux/gin-gorm-api-starter/core/interface/repository"
-	"github.com/zetsux/gin-gorm-api-starter/infrastructure/repository"
-	"github.com/zetsux/gin-gorm-api-starter/support/constant"
-	support "github.com/zetsux/gin-gorm-api-starter/tests/testutil"
-	"github.com/zetsux/gin-gorm-api-starter/tests/testutil/factory"
 )
 
 // --- Test Helpers ---

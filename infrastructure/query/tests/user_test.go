@@ -4,15 +4,16 @@ import (
 	"context"
 	"testing"
 
+	"myapp/core/helper/dto"
+	queryiface "myapp/core/interface/query"
+	repositoryiface "myapp/core/interface/repository"
+	"myapp/infrastructure/query"
+	"myapp/infrastructure/repository"
+	"myapp/support/base"
+	support "myapp/tests/testutil"
+	"myapp/tests/testutil/factory"
+
 	"github.com/stretchr/testify/require"
-	"github.com/zetsux/gin-gorm-api-starter/core/helper/dto"
-	queryiface "github.com/zetsux/gin-gorm-api-starter/core/interface/query"
-	repositoryiface "github.com/zetsux/gin-gorm-api-starter/core/interface/repository"
-	"github.com/zetsux/gin-gorm-api-starter/infrastructure/query"
-	"github.com/zetsux/gin-gorm-api-starter/infrastructure/repository"
-	"github.com/zetsux/gin-gorm-api-starter/support/base"
-	support "github.com/zetsux/gin-gorm-api-starter/tests/testutil"
-	"github.com/zetsux/gin-gorm-api-starter/tests/testutil/factory"
 )
 
 // --- Test Helpers ---

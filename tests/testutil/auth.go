@@ -7,10 +7,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"myapp/core/helper/dto"
+	"myapp/support/base"
+
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/require"
-	"github.com/zetsux/gin-gorm-api-starter/core/helper/dto"
-	"github.com/zetsux/gin-gorm-api-starter/support/base"
 )
 
 func GetToken(t *testing.T, server *gin.Engine, email, password string) string {

@@ -8,6 +8,13 @@ tidy:
 run: 
 	go run main.go
 
+# Development mode with hot reload
+dev:
+	@echo "🔄 Starting development server with hot reload..."
+	@echo "📚 Swagger docs will be available at http://localhost:8080/swagger/index.html"
+	swag init --parseDependency --parseInternal
+	air
+
 build: 
 	go build -o main main.go
 
@@ -31,6 +38,16 @@ migrate:
 
 seed:
 	go run main.go seed
+
+# =========================
+# Swagger commands
+# =========================
+
+swagger:
+	swag init --parseDependency --parseInternal
+
+swagger-fmt:
+	swag fmt
 
 # =========================
 # Docker commands

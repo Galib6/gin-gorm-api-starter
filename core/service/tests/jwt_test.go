@@ -3,8 +3,9 @@ package service_test
 import (
 	"testing"
 
+	"myapp/core/service"
+
 	"github.com/stretchr/testify/require"
-	"github.com/zetsux/gin-gorm-api-starter/core/service"
 )
 
 func TestJWTService_GenerateValidateAndGetAttrs(t *testing.T) {

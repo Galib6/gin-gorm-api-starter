@@ -3,8 +3,9 @@ package seeder
 import (
 	"errors"
 
-	"github.com/zetsux/gin-gorm-api-starter/core/entity"
-	"github.com/zetsux/gin-gorm-api-starter/support/constant"
+	"myapp/core/entity"
+	"myapp/support/constant"
+
 	"gorm.io/gorm"
 )
 

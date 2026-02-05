@@ -2,12 +2,13 @@ package service
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"time"
 
+	"myapp/support/constant"
+	"myapp/support/logger"
+
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/zetsux/gin-gorm-api-starter/support/constant"
 )
 
 type JWTService interface {
@@ -55,7 +56,7 @@ func (sv *jwtService) GenerateToken(id string, role string) string {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	t, err := token.SignedString([]byte(sv.secretKey))
 	if err != nil {
-		log.Println(err)
+		logger.Error("JWT token generation failed: %v", err)
 	}
 	return t
 }

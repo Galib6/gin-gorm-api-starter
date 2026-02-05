@@ -5,8 +5,9 @@ import (
 	"math"
 	"strings"
 
-	errs "github.com/zetsux/gin-gorm-api-starter/core/helper/errors"
-	"github.com/zetsux/gin-gorm-api-starter/support/base"
+	errs "myapp/core/helper/errors"
+	"myapp/support/base"
+
 	"golang.org/x/exp/slices"
 	"gorm.io/gorm"
 )

@@ -3,7 +3,8 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/zetsux/gin-gorm-api-starter/database"
+	"myapp/database"
+
 	"gorm.io/gorm"
 )
 

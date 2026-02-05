@@ -11,21 +11,22 @@ import (
 	"strings"
 	"testing"
 
+	"myapp/api/v1/controller"
+	"myapp/api/v1/router"
+	"myapp/core/helper/dto"
+	errs "myapp/core/helper/errors"
+	"myapp/core/helper/messages"
+	"myapp/core/service"
+	"myapp/support/base"
+	"myapp/support/constant"
+	"myapp/support/middleware"
+
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/samber/do"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	"github.com/zetsux/gin-gorm-api-starter/api/v1/controller"
-	"github.com/zetsux/gin-gorm-api-starter/api/v1/router"
-	"github.com/zetsux/gin-gorm-api-starter/core/helper/dto"
-	errs "github.com/zetsux/gin-gorm-api-starter/core/helper/errors"
-	"github.com/zetsux/gin-gorm-api-starter/core/helper/messages"
-	"github.com/zetsux/gin-gorm-api-starter/core/service"
-	"github.com/zetsux/gin-gorm-api-starter/support/base"
-	"github.com/zetsux/gin-gorm-api-starter/support/constant"
-	"github.com/zetsux/gin-gorm-api-starter/support/middleware"
 )
 
 // --- Mock Services ---
@@ -67,6 +68,11 @@ func (m *userServiceMock) ChangePicture(ctx context.Context, req dto.UserChangeP
 func (m *userServiceMock) DeletePicture(ctx context.Context, userID string) error {
 	args := m.Called(ctx, userID)
 	return args.Error(0)
+}
+
+func (m *userServiceMock) RunUserMaintenance(ctx context.Context, req dto.UserMaintenanceRequest) (dto.UserMaintenanceResponse, error) {
+	args := m.Called(ctx, req)
+	return args.Get(0).(dto.UserMaintenanceResponse), args.Error(1)
 }
 
 type jwtServiceMock struct{ mock.Mock }

@@ -7,11 +7,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"myapp/core/helper/dto"
+	"myapp/core/helper/messages"
+	"myapp/support/base"
+	"myapp/tests/testutil"
+
 	"github.com/stretchr/testify/require"
-	"github.com/zetsux/gin-gorm-api-starter/core/helper/dto"
-	"github.com/zetsux/gin-gorm-api-starter/core/helper/messages"
-	"github.com/zetsux/gin-gorm-api-starter/support/base"
-	"github.com/zetsux/gin-gorm-api-starter/tests/testutil"
 )
 
 // Test user registration endpoint

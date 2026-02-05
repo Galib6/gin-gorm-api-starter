@@ -9,11 +9,12 @@ import (
 	"path/filepath"
 	"testing"
 
+	"myapp/core/entity"
+	"myapp/core/helper/dto"
+
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	"github.com/zetsux/gin-gorm-api-starter/core/entity"
-	"github.com/zetsux/gin-gorm-api-starter/core/helper/dto"
 	"gorm.io/gorm"
 )
 

@@ -3,11 +3,11 @@ package controller
 import (
 	"net/http"
 
-	"github.com/zetsux/gin-gorm-api-starter/core/helper/dto"
-	"github.com/zetsux/gin-gorm-api-starter/core/helper/messages"
-	"github.com/zetsux/gin-gorm-api-starter/core/service"
-	"github.com/zetsux/gin-gorm-api-starter/support/base"
-	"github.com/zetsux/gin-gorm-api-starter/support/constant"
+	"myapp/core/helper/dto"
+	"myapp/core/helper/messages"
+	"myapp/core/service"
+	"myapp/support/base"
+	"myapp/support/constant"
 
 	"github.com/gin-gonic/gin"
 )

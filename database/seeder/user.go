@@ -16,12 +16,14 @@ func UserSeeder(db *gorm.DB) error {
 			Email:    "admin@gmail.com",
 			Password: "admin1",
 			Role:     constant.EnumRoleAdmin,
+			Provider: "local",
 		},
 		{
 			Name:     "User",
 			Email:    "user@gmail.com",
 			Password: "user1",
 			Role:     constant.EnumRoleUser,
+			Provider: "local",
 		},
 	}
 

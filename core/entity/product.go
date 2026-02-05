@@ -8,7 +8,7 @@ import (
 )
 
 type Product struct {
-	ID          uuid.UUID       `gorm:"type:uuid;primaryKey;default:uuid_generate_v4()" json:"id"`
+	ID          uuid.UUID       `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"id"`
 	Name        string          `json:"name" gorm:"not null"`
 	Description string          `json:"description"`
 	SKU         string          `json:"sku" gorm:"unique;not null"`
@@ -24,7 +24,7 @@ type Product struct {
 }
 
 type Category struct {
-	ID          uuid.UUID `gorm:"type:uuid;primaryKey;default:uuid_generate_v4()" json:"id"`
+	ID          uuid.UUID `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"id"`
 	Name        string    `json:"name" gorm:"unique;not null"`
 	Description string    `json:"description"`
 	base.Model

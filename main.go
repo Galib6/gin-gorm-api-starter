@@ -7,7 +7,8 @@ import (
 	"myapp/api/v1/router"
 	"myapp/cmd"
 	"myapp/config"
-	_ "myapp/docs" // Swagger docs
+	"myapp/database/migrations"
+	docs "myapp/docs" // Swagger docs (allow runtime modifications)
 	"myapp/provider"
 	"myapp/support/constant"
 	"myapp/support/logger"
@@ -61,6 +62,18 @@ func main() {
 	// Handling CLI Commands
 	cmd.Execute(db)
 
+	// Auto-run migrations on startup (if not executing a CLI command)
+	if os.Getenv("SKIP_MIGRATION") != "true" {
+		logger.Info("🔄 Checking for pending migrations...")
+		if err := migrations.RunMigrations("up"); err != nil {
+			logger.Error("❌ Failed to run auto-migrations: %v", err)
+			// Don't exit, just log error. Or should we exit? Usually safe to exit in production if migration fails.
+			// For dev/local, maybe we want to continue? Let's exit to be safe.
+			os.Exit(1)
+		}
+		logger.Info("✅ Database is up to date")
+	}
+
 	// Setting Up Server with custom recovery and logger
 	gin.SetMode(gin.ReleaseMode) // Disable default Gin logger
 	server := gin.New()          // Use gin.New() instead of gin.Default() for custom middlewares
@@ -88,6 +101,9 @@ func main() {
 	if port == "" {
 		port = "8080"
 	}
+
+	// Set swagger host dynamically so Swagger UI reflects actual server port
+	docs.SwaggerInfo.Host = fmt.Sprintf("localhost:%s", port)
 
 	fmt.Println()
 	logger.Info("🚀 Server running on http://localhost:%s", port)
